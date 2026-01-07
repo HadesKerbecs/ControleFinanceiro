@@ -1,0 +1,14 @@
+from django.contrib import admin
+from .models import Category, SubCategory
+
+@admin.register(Category)
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ('name', 'active')
+    list_filter = ('active',)
+    search_fields = ('name',)
+
+@admin.register(SubCategory)
+class SubCategoryAdmin(admin.ModelAdmin):
+    list_display = ('name', 'category', 'user', 'active')
+    list_filter = ('category', 'active')
+    search_fields = ('name',)
