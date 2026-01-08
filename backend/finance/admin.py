@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category, SubCategory
+from .models import Category, SubCategory, Expense
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
@@ -12,3 +12,17 @@ class SubCategoryAdmin(admin.ModelAdmin):
     list_display = ('name', 'category', 'user', 'active')
     list_filter = ('category', 'active')
     search_fields = ('name',)
+
+@admin.register(Expense)
+class ExpenseAdmin(admin.ModelAdmin):
+    list_display = (
+        'description',
+        'user',
+        'subcategory',
+        'payment_type',
+        'total_value',
+        'installments_quantity',
+        'concluded'
+    )
+    list_filter = ('payment_type', 'concluded')
+    search_fields = ('description',)
