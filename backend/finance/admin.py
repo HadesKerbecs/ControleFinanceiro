@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category, SubCategory, Expense
+from .models import Category, SubCategory, Expense, Installment
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
@@ -26,3 +26,14 @@ class ExpenseAdmin(admin.ModelAdmin):
     )
     list_filter = ('payment_type', 'concluded')
     search_fields = ('description',)
+
+@admin.register(Installment)
+class InstallmentAdmin(admin.ModelAdmin):
+    list_display = (
+        'expense',
+        'number',
+        'value',
+        'due_date',
+        'paid'
+    )
+    list_filter = ('paid',)
