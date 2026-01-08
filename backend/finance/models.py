@@ -143,3 +143,77 @@ class FixedCommitment(models.Model):
     def __str__(self):
         return f'{self.name} - {self.value}'
 
+class PersonDebt(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='person_debts'
+    )
+
+    person_name = models.CharField(max_length=100)
+
+    expense = models.ForeignKey(
+        Expense,
+        on_delete=models.CASCADE,
+        related_name='person_debts'
+    )
+
+    value = models.DecimalField(max_digits=10, decimal_places=2)
+
+    paid = models.BooleanField(default=False)
+    paid_at = models.DateField(null=True, blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.person_name} - {self.value}'
+    
+class PersonDebt(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='person_debts'
+    )
+
+    person_name = models.CharField(max_length=100)
+
+    expense = models.ForeignKey(
+        Expense,
+        on_delete=models.CASCADE,
+        related_name='person_debts'
+    )
+
+    value = models.DecimalField(max_digits=10, decimal_places=2)
+
+    paid = models.BooleanField(default=False)
+    paid_at = models.DateField(null=True, blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.person_name} - {self.value}'
+
+class History(models.Model):
+    class ActionType(models.TextChoices):
+        CREATE = 'CREATE', 'Criado'
+        UPDATE = 'UPDATE', 'Atualizado'
+        PAY = 'PAY', 'Pago'
+        DELETE = 'DELETE', 'Excluído'
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='histories'
+    )
+
+    action = models.CharField(
+        max_length=20,
+        choices=ActionType.choices
+    )
+
+    description = models.TextField()
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.action} - {self.description[:30]}'
