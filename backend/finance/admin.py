@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category, SubCategory, Expense, Installment
+from .models import Category, SubCategory, Expense, Installment, FixedCommitment
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
@@ -37,3 +37,9 @@ class InstallmentAdmin(admin.ModelAdmin):
         'paid'
     )
     list_filter = ('paid',)
+
+@admin.register(FixedCommitment)
+class FixedCommitmentAdmin(admin.ModelAdmin):
+    list_display = ('name', 'user', 'value', 'active')
+    list_filter = ('active',)
+    search_fields = ('name',)
