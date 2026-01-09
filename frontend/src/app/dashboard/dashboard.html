@@ -1,6 +1,70 @@
-<apx-chart
-  [series]="chartOptions.series"
-  [chart]="chartOptions.chart"
-  [labels]="chartOptions.labels"
-  [theme]="chartOptions.theme">
-</apx-chart>
+<div class="dashboard">
+
+  <div class="chart-card">
+    <apx-chart
+      [series]="chartOptions.series"
+      [chart]="chartOptions.chart"
+      [labels]="chartOptions.labels"
+      [theme]="chartOptions.theme">
+    </apx-chart>
+  </div>
+
+  <div class="alerts" *ngIf="alerts">
+
+    <div class="alert warning" *ngIf="alerts.salary_percentage >= 50 && alerts.salary_percentage < 70">
+      Você já comprometeu {{ alerts.salary_percentage }}% do salário
+    </div>
+
+    <div class="alert danger" *ngIf="alerts.salary_percentage >= 70">
+      Atenção: {{ alerts.salary_percentage }}% do salário comprometido
+    </div>
+
+    <div class="alert info" *ngFor="let item of alerts.due_soon">
+      {{ item.description }} vence em {{ item.due_date }} — R$ {{ item.value }}
+    </div>
+
+    <div class="alert info" *ngFor="let fixo of alerts.fixed_commitments">
+      Compromisso fixo: {{ fixo.name }} — R$ {{ fixo.value }}
+    </div>
+
+  </div>
+
+<div class="goals" *ngIf="goals">
+
+  <div class="goal-card">
+    <h3>Meta mensal</h3>
+
+    <div class="goal-bar">
+      <div
+        class="goal-progress"
+        [class.warning]="goals.general.percentage >= 70"
+        [class.danger]="goals.general.percentage >= 90"
+        [style.width.%]="goals.general.percentage">
+      </div>
+    </div>
+
+    <small>
+      R$ {{ goals.general.used }} / R$ {{ goals.general.limit }}
+      ({{ goals.general.percentage }}%)
+    </small>
+  </div>
+
+  <div class="goal-card" *ngFor="let cat of goals.categories">
+    <h4>{{ cat.category }}</h4>
+
+    <div class="goal-bar">
+      <div
+        class="goal-progress"
+        [class.warning]="cat.percentage >= 70"
+        [class.danger]="cat.percentage >= 90"
+        [style.width.%]="cat.percentage">
+      </div>
+    </div>
+
+    <small>
+      R$ {{ cat.used }} / R$ {{ cat.limit }}
+      ({{ cat.percentage }}%)
+    </small>
+  </div>
+
+</div>

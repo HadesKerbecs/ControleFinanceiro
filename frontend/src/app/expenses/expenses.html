@@ -1,1 +1,21 @@
-<p>expenses works!</p>
+<form [formGroup]="form" class="filters">
+  <input type="date" formControlName="startDate" />
+  <input type="date" formControlName="endDate" />
+
+  <select formControlName="category">
+    <option value="">Categoria</option>
+  </select>
+
+  <select formControlName="card">
+    <option value="">Cartão</option>
+  </select>
+
+  <select formControlName="status">
+    <option value="">Status</option>
+    <option value="paid">Pago</option>
+    <option value="pending">Pendente</option>
+  </select>
+
+  <button type="button" (click)="applyFilters()">Filtrar</button>
+  <button type="button" (click)="clearFilters()">Limpar</button>
+</form>

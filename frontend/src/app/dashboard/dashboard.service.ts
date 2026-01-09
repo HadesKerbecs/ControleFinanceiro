@@ -10,4 +10,12 @@ export class DashboardService {
   getSummary() {
     return this.http.get<any>(`${this.api}/summary/`);
   }
+
+  getAlerts() {
+  return this.http.get<any>('http://127.0.0.1:8000/api/dashboard/alerts/');
+  }
+
+  getGoals() {
+  return this.http.get<any>(`${this.api}/goals/`);
+  }
 }

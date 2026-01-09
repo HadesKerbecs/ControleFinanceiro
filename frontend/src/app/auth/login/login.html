@@ -1,13 +1,29 @@
-<form [formGroup]="form" (ngSubmit)="submit()" class="form">
-  <input formControlName="username" placeholder="Usuário" />
-  <small *ngIf="form.controls.username.invalid && form.controls.username.touched">
-    Usuário obrigatório
-  </small>
+<div class="form-container">
+  <h1>Bem-vindo</h1>
+  <p class="subtitle">Controle financeiro pessoal</p>
 
-  <input type="password" formControlName="password" placeholder="Senha" />
-  <small *ngIf="form.controls.password.invalid && form.controls.password.touched">
-    Senha obrigatória
-  </small>
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <div class="field">
+      <label>Usuário</label>
+      <input formControlName="username" />
+      <small *ngIf="form.controls.username.invalid && form.controls.username.touched">
+        Usuário obrigatório
+      </small>
+    </div>
 
-  <button [disabled]="form.invalid">Entrar</button>
-</form>
+    <div class="field">
+      <label>Senha</label>
+      <input type="password" formControlName="password" />
+      <small *ngIf="form.controls.password.invalid && form.controls.password.touched">
+        Senha obrigatória
+      </small>
+    </div>
+
+    <button [disabled]="form.invalid">Entrar</button>
+  </form>
+
+  <div class="footer">
+    Não tem conta?
+    <a routerLink="/register">Criar agora</a>
+  </div>
+</div>
