@@ -1,0 +1,13 @@
+<form [formGroup]="form" (ngSubmit)="submit()" class="form">
+  <input formControlName="username" placeholder="Usuário" />
+  <small *ngIf="form.controls.username.invalid && form.controls.username.touched">
+    Usuário obrigatório
+  </small>
+
+  <input type="password" formControlName="password" placeholder="Senha" />
+  <small *ngIf="form.controls.password.invalid && form.controls.password.touched">
+    Senha obrigatória
+  </small>
+
+  <button [disabled]="form.invalid">Entrar</button>
+</form>
