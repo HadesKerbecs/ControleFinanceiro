@@ -1,1 +1,47 @@
-<p>cards works!</p>
+<div class="cards-page">
+
+  <div class="header">
+    <h2>Cartões</h2>
+    <button class="primary">Novo cartão</button>
+  </div>
+
+  <div *ngIf="loading">Carregando...</div>
+
+  <div class="cards-grid">
+    <div class="card-item" *ngFor="let card of cards"
+         [class.over]="card.is_over_limit">
+
+      <div class="card-header">
+        <span>{{ card.bank_name }}</span>
+        <small>{{ card.brand }}</small>
+      </div>
+
+      <div class="card-values">
+        <div>
+          <label>Limite</label>
+          <strong>R$ {{ card.limit }}</strong>
+        </div>
+
+        <div>
+          <label>Usado</label>
+          <strong>R$ {{ card.total_spent }}</strong>
+        </div>
+
+        <div>
+          <label>Disponível</label>
+          <strong>R$ {{ card.available_limit }}</strong>
+        </div>
+      </div>
+
+      <div class="alert" *ngIf="card.is_over_limit">
+        Limite estourado
+      </div>
+
+      <small>
+        Fecha dia {{ card.closing_day }} • Vence dia {{ card.due_day }}
+      </small>
+
+    </div>
+  </div>
+
+</div>

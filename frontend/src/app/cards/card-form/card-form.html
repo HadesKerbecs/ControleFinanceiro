@@ -1,0 +1,12 @@
+<form [formGroup]="form" (ngSubmit)="submit()">
+  <input placeholder="Banco" formControlName="bank_name" />
+  <input placeholder="Bandeira" formControlName="brand" />
+  <input type="number" placeholder="Limite" formControlName="limit" />
+
+  <div class="row">
+    <input type="number" placeholder="Fecha dia" formControlName="closing_day" />
+    <input type="number" placeholder="Vence dia" formControlName="due_day" />
+  </div>
+
+  <button type="submit" class="primary">Salvar</button>
+</form>

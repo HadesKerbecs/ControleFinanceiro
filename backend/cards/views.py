@@ -3,7 +3,6 @@ from rest_framework.permissions import IsAuthenticated
 from .models import Card
 from .serializers import CardSerializer
 
-
 class CardViewSet(ModelViewSet):
     serializer_class = CardSerializer
     permission_classes = [IsAuthenticated]

@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.db import models
-
+from django.db.models import Sum
 
 class Card(models.Model):
     user = models.ForeignKey(
@@ -23,3 +23,17 @@ class Card(models.Model):
 
     def __str__(self):
         return f'{self.bank_name} ({self.brand})'
+    
+    @property
+    def total_spent(self):
+        return self.expenses.aggregate(
+            total=Sum('total_value')
+        )['total'] or 0
+
+    @property
+    def available_limit(self):
+        return self.limit - self.total_spent
+
+    @property
+    def is_over_limit(self):
+        return self.total_spent > self.limit
