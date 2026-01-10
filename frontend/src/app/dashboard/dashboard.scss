@@ -3,6 +3,20 @@
   display: grid;
   grid-template-columns: 1fr;
   gap: 32px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.dashboard-top {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+}
+
+@media (max-width: 1024px) {
+  .dashboard-top {
+    grid-template-columns: 1fr;
+  }
 }
 
 .chart-card {
@@ -47,10 +61,31 @@
   .chart-card {
     max-width: 100%;
     padding: 16px;
+    border-radius: 12px;
+  }
+
+  .dashboard {
+    padding: 16px;
   }
 
   .alerts {
-    padding: 0 8px;
+    padding: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .chart-card {
+    max-width: 100%;
+    padding: 16px;
+    border-radius: 12px;
+  }
+
+  .dashboard {
+    padding: 16px;
+  }
+
+  .alerts {
+    padding: 0;
   }
 }
 

@@ -1,17 +1,55 @@
 .app-container {
   display: flex;
   height: 100vh;
-  background-color: #0f172a;
+  width: 100%;
+  background: #020617;
+}
+
+app-sidebar {
+  width: 240px;
+  flex-shrink: 0;
 }
 
 .main-container {
   flex: 1;
   display: flex;
   flex-direction: column;
+  min-width: 0;
+}
+
+app-header {
+  height: 64px;
+  flex-shrink: 0;
 }
 
 .content {
+  flex: 1;
   padding: 24px;
   overflow-y: auto;
-  background-color: #020617;
+  background: radial-gradient(
+    circle at top,
+    #0f172a 0%,
+    #020617 60%
+  );
 }
+
+@media (max-width: 768px) {
+  .app-container {
+    flex-direction: column;
+  }
+
+  app-sidebar {
+    width: 100%;
+    height: auto;
+    order: 2;
+  }
+
+  .main-container {
+    order: 1;
+  }
+
+  .content {
+    padding-bottom: 88px;
+  }
+}
+

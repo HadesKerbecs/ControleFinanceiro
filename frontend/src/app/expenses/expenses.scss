@@ -1,0 +1,21 @@
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.filters input,
+.filters select,
+.filters button {
+  flex: 1 1 140px;
+}
+
+@media (max-width: 768px) {
+  .filters {
+    gap: 10px;
+  }
+
+  .filters button {
+    flex: 1 1 100%;
+  }
+}
