@@ -1,21 +1,221 @@
-.filters {
+.expenses-header {
   display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.new-expense-btn {
+  margin-left: auto;
+}
+
+/* =======================
+   FILTROS
+======================= */
+.filters {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr) auto auto;
+  gap: 16px;
+  align-items: end;
+  margin-bottom: 24px;
+}
+
+.filters .field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.filters label {
+  font-size: 12px;
+  opacity: 0.7;
 }
 
 .filters input,
-.filters select,
-.filters button {
-  flex: 1 1 140px;
+.filters select {
+  height: 44px;
 }
 
+.actions {
+  display: flex;
+  gap: 12px;
+}
+
+.actions button {
+  height: 44px;
+  min-width: 90px;
+}
+
+/* =======================
+   LISTA
+======================= */
+.expenses-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-bottom: 80px;
+}
+
+.expense {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px 16px;
+  padding: 14px;
+  border-radius: 12px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+}
+
+/* INFO */
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.info strong {
+  font-size: 14px;
+}
+
+/* META (valor) */
+.meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  font-size: 13px;
+}
+
+.meta span {
+  font-weight: 600;
+}
+
+/* STATUS */
+.status {
+  width: fit-content;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+.status.paid {
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+}
+
+.status.pending {
+  background: rgba(234, 179, 8, 0.15);
+  color: #eab308;
+}
+
+/* AÇÕES */
+.expense .actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.expense .actions .icon {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+
+  font-size: 15px;
+  padding: 4px;
+  line-height: 1;
+}
+
+.expense .actions .icon.danger {
+  color: #ef4444;
+}
+
+.pay-btn {
+  padding: 8px 14px;
+  font-size: 13px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+/* =======================
+   MODAL
+======================= */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  width: 420px;
+  padding: 24px;
+  border-radius: 16px;
+  background: #ffffff;
+  color: #0f172a;
+}
+
+/* =======================
+   LOADING / EMPTY
+======================= */
+.loading,
+.empty {
+  text-align: center;
+  padding: 40px;
+  opacity: 0.6;
+  font-size: 14px;
+}
+
+/* =======================
+   MOBILE
+======================= */
 @media (max-width: 768px) {
-  .filters {
-    gap: 10px;
+
+  /* card */
+  .expense {
+    grid-template-columns: 1fr;
   }
 
-  .filters button {
-    flex: 1 1 100%;
+  .meta {
+    align-items: flex-start;
+  }
+
+  /* ações */
+  .expense .actions {
+    justify-content: flex-start;
+  }
+
+  .pay-btn {
+    flex: 1;
+    font-size: 13px;
+    padding: 8px 10px;
+    white-space: nowrap;
+    text-align: center;
+  }
+
+  .expense .actions .icon {
+    font-size: 14px;        /* ÍCONE MENOR */
+    padding: 4px;           /* MENOS ÁREA CLICÁVEL */
+    line-height: 1;
+  }
+}
+
+/* =======================
+   TABLET
+======================= */
+@media (max-width: 1200px) {
+  .filters {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .actions {
+    grid-column: span 2;
+    justify-content: space-between;
   }
 }

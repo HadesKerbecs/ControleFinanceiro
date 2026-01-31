@@ -1,45 +1,97 @@
 <div class="cards-page">
 
-  <div class="header">
-    <h2>Cartões</h2>
-    <button class="primary">Novo cartão</button>
+  <div class="cards-header">
+    <h1 class="page-title">Cartões</h1>
+    <button class="primary" (click)="openForm()">+ Novo Cartão</button>
   </div>
 
-  <div *ngIf="loading">Carregando...</div>
+  <div class="form-overlay" *ngIf="showForm">
+    <app-card-form
+      [card]="selectedCard"
+      (saved)="closeForm()"
+      (cancel)="showForm = false; selectedCard = null">
+    </app-card-form>
+  </div>
 
-  <div class="cards-grid">
-    <div class="card-item" *ngFor="let card of cards"
-         [class.over]="card.is_over_limit">
+  <div *ngIf="loading" class="loading">
+    Carregando cartões...
+  </div>
 
-      <div class="card-header">
-        <span>{{ card.bank_name }}</span>
-        <small>{{ card.brand }}</small>
+  <div *ngIf="!loading && cards.length === 0" class="empty">
+    Nenhum cartão cadastrado
+  </div>
+
+  <div class="cards-grid" *ngIf="!loading && cards.length > 0">
+    <div class="card-wrapper" *ngFor="let card of cards">
+
+      <div
+        class="credit-card"
+        [class.expired]="isCardExpired(card)"
+        [ngStyle]="{
+          background: 'linear-gradient(135deg,' + getCardColor(card.bank_name) + ', #020617)'
+        }">
+
+        <div class="card-top">
+          <span class="bank">{{ card.bank_name }}</span>
+          <span class="brand">{{ card.brand }}</span>
+
+          <div class="card-actions">
+            <button
+              title="Editar"
+              (click)="editCard(card)"
+              [disabled]="!canEditCard(card)">
+              ✏️
+            </button>
+
+            <button
+              title="Remover"
+              (click)="deleteCard(card)">
+              🗑️
+            </button>
+          </div>
+        </div>
+
+        <div class="card-middle">
+          **** **** **** {{ card.last_four_digits }}
+        </div>
+
+        <div class="card-bottom">
+          Expira {{ card.expiration_month }}/{{ card.expiration_year }}
+
+          <span class="badge warning" *ngIf="isCardExpiringSoon(card)">
+            Expira em breve
+          </span>
+
+          <span class="badge danger" *ngIf="isCardExpired(card)">
+            Cartão vencido
+          </span>
+        </div>
       </div>
 
-      <div class="card-values">
-        <div>
-          <label>Limite</label>
-          <strong>R$ {{ card.limit }}</strong>
+      <div class="card-info">
+        <div class="usage-bar">
+          <div
+            class="usage-progress"
+            [style.width.%]="getUsagePercent(card)"
+            [class.safe]="getUsagePercent(card) < 50"
+            [class.warning]="getUsagePercent(card) >= 50 && getUsagePercent(card) < 80"
+            [class.danger]="getUsagePercent(card) >= 80">
+          </div>
         </div>
 
         <div>
-          <label>Usado</label>
-          <strong>R$ {{ card.total_spent }}</strong>
+          <small>Limite:</small>
+          <strong>{{ card.limit | currency:'BRL':'symbol' }}</strong>
         </div>
-
         <div>
-          <label>Disponível</label>
-          <strong>R$ {{ card.available_limit }}</strong>
+          <small>Gasto:</small>
+          <strong>{{ card.total_spent | currency:'BRL':'symbol' }}</strong>
+        </div>
+        <div>
+          <small>Disponível:</small>
+          <strong>{{ card.available_limit | currency:'BRL':'symbol' }}</strong>
         </div>
       </div>
-
-      <div class="alert" *ngIf="card.is_over_limit">
-        Limite estourado
-      </div>
-
-      <small>
-        Fecha dia {{ card.closing_day }} • Vence dia {{ card.due_day }}
-      </small>
 
     </div>
   </div>

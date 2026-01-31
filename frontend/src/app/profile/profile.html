@@ -1,0 +1,35 @@
+<div class="profile-page card">
+  <h1>Perfil</h1>
+
+  <div *ngIf="loading" class="status">Carregando...</div>
+
+  <form [formGroup]="form" (ngSubmit)="save()" *ngIf="!loading" class="profile-form">
+    <label>
+      <div class="label">Salário bruto</div>
+      <input formControlName="salario_bruto" (blur)="formatSalario()" />
+    </label>
+
+    <label>
+      <div class="label">Tipo de vínculo</div>
+      <select formControlName="tipo_vinculo">
+        <option value="">Selecione</option>
+        <option value="clt">CLT</option>
+        <option value="pj">PJ</option>
+        <option value="autonomo">Autônomo</option>
+      </select>
+    </label>
+
+    <div class="computed">
+      <div><strong>INSS:</strong> {{ formatBRL(inss) }}</div>
+      <div><strong>Salário líquido:</strong> {{ formatBRL(salario_liquido) }}</div>
+      <div><strong>Limite mensal sugerido:</strong> {{ formatBRL(limite_mensal) }}</div>
+    </div>
+
+    <div class="actions">
+      <button type="submit" class="primary" [disabled]="saving">Salvar</button>
+      <button type="button" class="outline" (click)="load()" [disabled]="saving || loading">Recarregar</button>
+    </div>
+
+    <div class="message error" *ngIf="message && !loading">{{ message }}</div>
+  </form>
+</div>

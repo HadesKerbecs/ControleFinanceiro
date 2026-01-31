@@ -7,11 +7,14 @@ class CardAdmin(admin.ModelAdmin):
     list_display = (
         'bank_name',
         'brand',
+        'last_four_digits',
         'user',
         'limit',
         'closing_day',
         'due_day',
+        'expiration_month',
+        'expiration_year',
         'active'
     )
     list_filter = ('active', 'brand')
-    search_fields = ('bank_name',)
+    search_fields = ('bank_name', 'last_four_digits')

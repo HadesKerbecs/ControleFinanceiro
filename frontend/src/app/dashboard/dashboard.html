@@ -1,12 +1,61 @@
 <div class="dashboard">
   <div class="dashboard-top">
+
+    <!-- GRÁFICO DONUT -->
     <div class="chart-card">
-      <apx-chart [series]="chartOptions.series" [chart]="chartOptions.chart" [labels]="chartOptions.labels"
-        [theme]="chartOptions.theme">
+      <h3 class="chart-title">Gastos por categoria (mês atual)</h3>
+
+      <apx-chart *ngIf="series.length > 0" [series]="series" [chart]="chart" [labels]="labels" [theme]="theme"
+        [legend]="legend">
       </apx-chart>
+
+      <div *ngIf="series.length === 0" class="empty-state">
+        Nenhum dado para o mês atual
+      </div>
     </div>
 
+    <!-- GRÁFICO EVOLUÇÃO MENSAL -->
+    <div class="chart-card">
+      <h3 class="chart-title">Evolução mensal de gastos</h3>
+
+      <apx-chart *ngIf="monthlySeries.length > 0" [series]="monthlySeries" [chart]="monthlyChart" [xaxis]="monthlyXAxis"
+        [stroke]="monthlyStroke" [theme]="theme">
+      </apx-chart>
+
+      <div *ngIf="monthlySeries.length === 0" class="empty-state">
+        Nenhum dado de evolução disponível
+      </div>
+    </div>
+
+    <!-- GRÁFICO POR CARTÃO -->
+    <div class="chart-card">
+      <h3 class="chart-title">Gastos por cartão (mês atual)</h3>
+
+      <apx-chart *ngIf="cardSeries.length > 0" [series]="cardSeries" [chart]="cardChart" [labels]="cardLabels"
+        [theme]="theme" [legend]="legend">
+      </apx-chart>
+
+      <div *ngIf="cardSeries.length === 0" class="empty-state">
+        Nenhum gasto por cartão neste mês
+      </div>
+    </div>
+
+    <!-- COMPARAÇÃO DE MESES -->
+    <div class="chart-card">
+      <h3 class="chart-title">Comparação de gastos: mês atual x anterior</h3>
+
+      <apx-chart *ngIf="comparisonSeries.length > 0" [series]="comparisonSeries" [chart]="comparisonChart"
+        [xaxis]="comparisonXAxis" [plotOptions]="comparisonPlotOptions" [theme]="theme">
+      </apx-chart>
+
+      <div *ngIf="comparisonSeries.length === 0" class="empty-state">
+        Sem dados para comparação
+      </div>
+    </div>
+
+    <!-- ALERTAS -->
     <div class="alerts" *ngIf="alerts">
+      <h3 class="card-title">Próximos vencimentos</h3>
 
       <div class="alert warning" *ngIf="alerts.salary_percentage >= 50 && alerts.salary_percentage < 70">
         Você já comprometeu {{ alerts.salary_percentage }}% do salário
@@ -17,7 +66,9 @@
       </div>
 
       <div class="alert info" *ngFor="let item of alerts.due_soon">
-        {{ item.description }} vence em {{ item.due_date }} — R$ {{ item.value }}
+        {{ item.description }}
+        vence em {{ item.due_date }}
+        — R$ {{ item.value }}
       </div>
 
       <div class="alert info" *ngFor="let fixo of alerts.fixed_commitments">
@@ -26,24 +77,55 @@
 
     </div>
 
-    <div class="goals" *ngIf="goals">
+    <!-- COMPROMISSOS FIXOS -->
+    <div class="alerts" *ngIf="fixedCommitments.length > 0">
+      <h3 class="card-title">Compromissos fixos do mês</h3>
 
-      <div class="goal-card">
-        <h3>Meta mensal</h3>
+      <div class="alert info" *ngFor="let fixo of fixedCommitments">
+        {{ fixo.name }} — R$ {{ fixo.value }}
+        <span *ngIf="fixo.days_to_due === 0">(vence hoje)</span>
+        <span *ngIf="fixo.days_to_due > 0">(vence em {{ fixo.days_to_due }} dias)</span>
+        <span *ngIf="fixo.days_to_due < 0">(vencido)</span>
+      </div>
+    </div>
+
+    <div class="goals">
+
+      <!-- META PELO SALÁRIO LÍQUIDO -->
+      <div class="goal-card" *ngIf="salaryGoal">
+        <h3>Meta mensal (salário líquido)</h3>
 
         <div class="goal-bar">
-          <div class="goal-progress" [class.warning]="goals.general.percentage >= 70"
-            [class.danger]="goals.general.percentage >= 90" [style.width.%]="goals.general.percentage">
+          <div class="goal-progress" [class.warning]="salaryGoal.percentage >= 70"
+            [class.danger]="salaryGoal.percentage >= 90" [style.width.%]="salaryGoal.percentage">
           </div>
         </div>
 
         <small>
-          R$ {{ goals.general.used }} / R$ {{ goals.general.limit }}
-          ({{ goals.general.percentage }}%)
+          R$ {{ salaryGoal.used }}
+          / R$ {{ salaryGoal.limit }}
+          ({{ salaryGoal.percentage }}%)
         </small>
       </div>
 
-      <div class="goal-card" *ngFor="let cat of goals.categories">
+      <!-- META PELO LIMITE SUGERIDO -->
+      <div class="goal-card" *ngIf="limitGoal">
+        <h3>Meta mensal sugerida (70%)</h3>
+
+        <div class="goal-bar">
+          <div class="goal-progress" [class.warning]="limitGoal.percentage >= 70"
+            [class.danger]="limitGoal.percentage >= 90" [style.width.%]="limitGoal.percentage">
+          </div>
+        </div>
+
+        <small>
+          R$ {{ limitGoal.used }}
+          / R$ {{ limitGoal.limit }}
+          ({{ limitGoal.percentage }}%)
+        </small>
+      </div>
+
+      <div class="goal-card" *ngFor="let cat of categoryGoals">
         <h4>{{ cat.category }}</h4>
 
         <div class="goal-bar">
@@ -53,9 +135,28 @@
         </div>
 
         <small>
-          R$ {{ cat.used }} / R$ {{ cat.limit }}
+          R$ {{ cat.used }} / R$ {{ cat.limit }} ({{ cat.percentage }}%)
+        </small>
+      </div>
+
+      <!-- METAS POR CATEGORIA (FUTURO) -->
+      <div class="goal-card" *ngFor="let cat of goals?.categories">
+        <h4>{{ cat.category }}</h4>
+
+        <div class="goal-bar">
+          <div class="goal-progress" [class.warning]="cat.percentage >= 70" [class.danger]="cat.percentage >= 90"
+            [style.width.%]="cat.percentage">
+          </div>
+        </div>
+
+        <small>
+          R$ {{ cat.used }}
+          / R$ {{ cat.limit }}
           ({{ cat.percentage }}%)
         </small>
       </div>
+
     </div>
+
   </div>
+</div>

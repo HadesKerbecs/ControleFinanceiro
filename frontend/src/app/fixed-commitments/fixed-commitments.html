@@ -1,0 +1,25 @@
+<div class="page">
+
+  <div class="header">
+    <h1>Compromissos Fixos</h1>
+
+    <a routerLink="/fixed-commitments/new" class="primary-btn">
+      + Novo compromisso
+    </a>
+  </div>
+
+  <div class="card" *ngFor="let c of commitments">
+    <strong>{{ c.name }}</strong>
+
+    <div class="meta">
+      <span>Valor: R$ {{ c.value }}</span>
+      <span>Categoria: {{ c.category_name }}</span>
+      <span>Vence dia {{ c.due_day }}</span>
+    </div>
+
+    <button class="secondary-btn" (click)="toggle(c)">
+      {{ c.active ? 'Desativar' : 'Ativar' }}
+    </button>
+  </div>
+
+</div>

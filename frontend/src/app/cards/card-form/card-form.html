@@ -1,12 +1,57 @@
 <form [formGroup]="form" (ngSubmit)="submit()">
-  <input placeholder="Banco" formControlName="bank_name" />
-  <input placeholder="Bandeira" formControlName="brand" />
-  <input type="number" placeholder="Limite" formControlName="limit" />
+  <h3>Cadastre um novo cartão</h3>
+  <select formControlName="bank_name" required>
+    <option value="" disabled selected>Selecione o banco</option>
+    <option value="Banco do Brasil">Banco do Brasil</option>
+    <option value="Nubank">Nubank</option>
+    <option value="Itaú">Itaú</option>
+    <option value="Bradesco">Bradesco</option>
+    <option value="Santander">Santander</option>
+    <option value="Caixa">Caixa</option>
+    <option value="Inter">Inter</option>
+    <option value="Next">Next</option>
+  </select>
+
+  <select formControlName="brand" required>
+    <option value="" disabled selected>Selecione a bandeira</option>
+    <option value="Visa">Visa</option>
+    <option value="MasterCard">MasterCard</option>
+    <option value="Elo">Elo</option>
+    <option value="American Express">American Express</option>
+    <option value="Hipercard">Hipercard</option>
+    <option value="Maestro">Maestro</option>
+    <option value="Diners Club">Diners Club</option>
+    <option value="Discover">Discover</option>
+    <option value="UnionPay">UnionPay</option>
+  </select>
+
+  <input placeholder="Últimos 4 dígitos" maxlength="4" formControlName="last_four_digits" />
+  <input type="text" placeholder="Limite (R$)" formControlName="limit" inputmode="decimal" (blur)="formatLimit()" />
+
 
   <div class="row">
-    <input type="number" placeholder="Fecha dia" formControlName="closing_day" />
-    <input type="number" placeholder="Vence dia" formControlName="due_day" />
+    <div>
+      <input type="number" placeholder="Mês validade (MM)" formControlName="expiration_month" />
+      <small *ngIf="form.get('expiration_month')?.invalid && form.get('expiration_month')?.touched">
+        Mês inválido (1 a 12)
+      </small>
+    </div>
+
+    <div>
+      <input type="number" placeholder="Ano validade (YY)" formControlName="expiration_year" />
+      <small *ngIf="form.get('expiration_year')?.invalid && form.get('expiration_year')?.touched">
+        Ano inválido
+      </small>
+    </div>
   </div>
 
-  <button type="submit" class="primary">Salvar</button>
+  <small class="error" *ngIf="form.errors?.['expired']">
+    O cartão já está vencido
+  </small>
+
+  <div class="actions">
+    <button type="submit" class="primary">Salvar</button>
+    <button type="button" class="secondary" (click)="close()">Cancelar</button>
+  </div>
+
 </form>

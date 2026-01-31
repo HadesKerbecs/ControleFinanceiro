@@ -1,0 +1,28 @@
+<div class="form-overlay">
+    <form [formGroup]="form" (ngSubmit)="save()">
+
+        <h2>Novo compromisso fixo</h2>
+        <input placeholder="Nome (ex: Água)" formControlName="name" />
+
+        <input type="text" placeholder="Valor (R$)" formControlName="value" inputmode="decimal"
+            (blur)="formatValue()" />
+
+        <select formControlName="category">
+            <option [ngValue]="null" disabled>
+                Selecione a categoria
+            </option>
+
+            <option *ngFor="let c of categories" [ngValue]="c.id">
+                {{ c.name }}
+            </option>
+        </select>
+
+        <input type="number" placeholder="Dia do vencimento (1–31)" formControlName="due_day" min="1" max="31" />
+
+        <div class="actions">
+            <button type="submit" class="primary">Salvar</button>
+            <button type="button" class="secondary" (click)="cancel()">Cancelar</button>
+        </div>
+
+    </form>
+</div>

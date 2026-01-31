@@ -1,11 +1,9 @@
 :host {
   display: flex;
   min-height: 100vh;
-  background: radial-gradient(
-    circle at top,
-    #1e293b 0%,
-    #020617 45%
-  );
+  background: linear-gradient(180deg,
+      #f1f5f9,
+      #e5e7eb);
   align-items: center;
   justify-content: center;
   font-family: 'Inter', 'Roboto', sans-serif;
@@ -15,23 +13,21 @@
   width: 100%;
   max-width: 420px;
   padding: 48px 40px;
-  background: rgba(2, 6, 23, 0.85);
+  background: #ffffff;
   border-radius: 16px;
-  box-shadow:
-    0 20px 40px rgba(0, 0, 0, 0.45),
-    inset 0 0 0 1px rgba(148, 163, 184, 0.08);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
   backdrop-filter: blur(12px);
 }
 
 h1 {
-  color: #f8fafc;
+  color: #0f172a;
   font-size: 26px;
   font-weight: 600;
   margin-bottom: 8px;
 }
 
 .subtitle {
-  color: #94a3b8;
+  color: #475569;
   font-size: 14px;
   margin-bottom: 32px;
 }
@@ -43,7 +39,7 @@ h1 {
 }
 
 label {
-  color: #94a3b8;
+  color: #475569;
   font-size: 13px;
   margin-bottom: 6px;
 }
@@ -51,10 +47,10 @@ label {
 input {
   background: transparent;
   border: none;
-  border-bottom: 1px solid rgba(148, 163, 184, 0.25);
+  border-bottom: 1px solid #cbd5f5;
   padding: 10px 4px;
   font-size: 15px;
-  color: #e5e7eb;
+  color: #0f172a;
   outline: none;
   transition: border-color 0.2s ease;
 
@@ -73,14 +69,12 @@ button {
   width: 100%;
   margin-top: 16px;
   padding: 14px;
-  background: linear-gradient(
-    135deg,
-    #2563eb,
-    #3b82f6
-  );
+  background: linear-gradient(135deg,
+      #2563eb,
+      #3b82f6);
+  color: #f8fafc;
   border: none;
   border-radius: 10px;
-  color: #f8fafc;
   font-size: 15px;
   font-weight: 500;
   cursor: pointer;

@@ -1,21 +1,109 @@
+<div class="expenses-header">
+  <h1>Despesas</h1>
+
+  <button type="button" class="primary new-expense-btn" (click)="openForm()">
+    + Nova despesa
+  </button>
+</div>
+
+<div class="overlay" *ngIf="showForm">
+  <div class="modal">
+    <app-expense-form
+      *ngIf="showForm"
+      [expense]="selectedExpense"
+      (saved)="closeForm()"
+      (cancel)="closeForm()">
+    </app-expense-form>
+  </div>
+</div>
+
 <form [formGroup]="form" class="filters">
-  <input type="date" formControlName="startDate" />
-  <input type="date" formControlName="endDate" />
+  <div class="field">
+    <label>Data inicial</label>
+    <input type="date" formControlName="startDate" />
+  </div>
+
+  <div class="field">
+    <label>Data final</label>
+    <input type="date" formControlName="endDate" />
+  </div>
 
   <select formControlName="category">
-    <option value="">Categoria</option>
+    <option [ngValue]="null" disabled>Categoria</option>
+    <option *ngFor="let cat of categories" [ngValue]="cat.id">
+      {{ cat.name }}
+    </option>
   </select>
 
   <select formControlName="card">
-    <option value="">Cartão</option>
+    <option [ngValue]="null" disabled>Cartão</option>
+    <option *ngFor="let card of cards" [ngValue]="card.id">
+      {{ card.bank_name }} - {{ card.brand }}
+    </option>
   </select>
 
   <select formControlName="status">
-    <option value="">Status</option>
+    <option [ngValue]="null" disabled>Status</option>
     <option value="paid">Pago</option>
     <option value="pending">Pendente</option>
   </select>
 
-  <button type="button" (click)="applyFilters()">Filtrar</button>
-  <button type="button" (click)="clearFilters()">Limpar</button>
+  <div class="actions">
+    <button type="button" class="primary" (click)="applyFilters()">
+      Filtrar
+    </button>
+    <button type="button" class="outline" (click)="clearFilters()">
+      Limpar
+    </button>
+  </div>
 </form>
+
+<div *ngIf="loading" class="loading">
+  Carregando despesas...
+</div>
+
+<div *ngIf="!loading && expenses.length === 0" class="empty">
+  Nenhuma despesa encontrada
+</div>
+
+<div class="expenses-list" *ngIf="!loading && expenses.length > 0">
+  <div class="expense" *ngFor="let expense of expenses">
+
+    <div class="info">
+      <strong>{{ expense.description }}</strong>
+
+      <small>{{ expense.purchase_date | date:'dd/MM/yyyy' }}</small>
+
+      <small class="status" [class.paid]="expense.concluded" [class.pending]="!expense.concluded">
+        {{ expense.concluded ? 'Pago' : 'Pendente' }}
+      </small>
+
+      <small *ngIf="expense.card">
+        Cartão: {{ expense.card.bank_name }} • {{ expense.card.brand }}
+      </small>
+
+      <small *ngIf="expense.installments_quantity > 1">
+        {{ expense.installments_quantity }}x de
+        R$ {{ expense.installments_value | number:'1.2-2' }}
+      </small>
+    </div>
+
+    <div class="meta">
+      <span>
+        R$ {{ expense.total_value | number:'1.2-2' }}
+      </span>
+      <small *ngIf="expense.installments_quantity > 1">
+        {{ expense.remaining_installments }} parcelas restantes
+      </small>
+    </div>
+
+    <div class="actions">
+      <button *ngIf="expense.remaining_installments > 0" class="pay-btn" (click)="payNextInstallment(expense)">
+        Marcar parcela como paga
+      </button>
+      <button class="icon" (click)="editExpense(expense)">✏️</button>
+      <button class="icon danger" (click)="deleteExpense(expense)">🗑️</button>
+    </div>
+
+  </div>
+</div>

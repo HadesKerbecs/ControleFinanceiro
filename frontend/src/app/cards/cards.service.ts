@@ -5,7 +5,7 @@ import { HttpClient } from '@angular/common/http';
 export class CardsService {
   private api = 'http://127.0.0.1:8000/api/cards/';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getCards() {
     return this.http.get<any[]>(this.api);
@@ -13,6 +13,10 @@ export class CardsService {
 
   createCard(data: any) {
     return this.http.post(this.api, data);
+  }
+  
+  updateCard(id: number, data: any) {
+    return this.http.put(`${this.api}${id}/`, data);
   }
 
   deleteCard(id: number) {

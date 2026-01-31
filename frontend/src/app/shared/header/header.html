@@ -1,7 +1,8 @@
 <header class="header">
-  <span class="title">Dashboard</span>
+  <span class="title">{{ title }}</span>
 
   <div class="user">
-    <span>Eduardo</span>
+    <span>{{ username }}</span>
+    <button class="logout" (click)="logout()">Sair</button>
   </div>
 </header>

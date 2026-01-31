@@ -3,8 +3,7 @@
   display: grid;
   grid-template-columns: 1fr;
   gap: 32px;
-  max-width: 1200px;
-  margin: 0 auto;
+  width: 100%;
 }
 
 .dashboard-top {
@@ -20,18 +19,27 @@
 }
 
 .chart-card {
-  max-width: 520px;
-  margin: 0 auto;
-  background: #1e293b;
-  border-radius: 16px;
-  padding: 24px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  width: 100%;
+  min-height: 360px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  padding: 16px;
+  border-radius: 12px;
+}
+
+.chart-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #0f172a;
+  margin-bottom: 12px;
 }
 
 .alerts {
   max-width: 720px;
   margin: 0 auto;
   display: flex;
+  color: #0f172a;
   flex-direction: column;
   gap: 12px;
 }
@@ -90,10 +98,11 @@
 }
 
 .goal-card {
-  background: #1e293b;
+  background: #ffffff;
   padding: 16px;
   border-radius: 12px;
   margin-bottom: 16px;
+  border: 1px solid #e2e8f0;
 }
 
 .goal-bar {

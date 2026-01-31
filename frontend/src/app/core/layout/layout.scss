@@ -1,8 +1,6 @@
 .app-container {
   display: flex;
-  height: 100vh;
-  width: 100%;
-  background: #020617;
+  min-height: 100vh;
 }
 
 app-sidebar {
@@ -14,7 +12,6 @@ app-sidebar {
   flex: 1;
   display: flex;
   flex-direction: column;
-  min-width: 0;
 }
 
 app-header {
@@ -26,11 +23,7 @@ app-header {
   flex: 1;
   padding: 24px;
   overflow-y: auto;
-  background: radial-gradient(
-    circle at top,
-    #0f172a 0%,
-    #020617 60%
-  );
+  background: #f1f5f9;
 }
 
 @media (max-width: 768px) {
@@ -39,17 +32,22 @@ app-header {
   }
 
   app-sidebar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
     width: 100%;
-    height: auto;
-    order: 2;
+    height: 64px;
+    z-index: 1000;
+    background: #ffffff;
+    border-top: 1px solid #e2e8f0;
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.08);
   }
 
   .main-container {
-    order: 1;
+    padding-bottom: 64px;
   }
 
   .content {
-    padding-bottom: 88px;
+    padding: 16px;
   }
 }
-

@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { AuthService } from '../../core/services/auth';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
@@ -10,7 +10,7 @@ import { CommonModule } from '@angular/common';
   selector: 'app-login',
   templateUrl: './login.html',
   styleUrls: ['./login.scss'],
-  imports: [CommonModule, ReactiveFormsModule]
+  imports: [CommonModule, ReactiveFormsModule, RouterModule]
 })
 export class Login {
   form;

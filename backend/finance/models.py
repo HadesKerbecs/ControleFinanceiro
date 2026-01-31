@@ -1,8 +1,8 @@
 from django.db import models
 from django.conf import settings
-from cards.models import Card
+
 from django.utils import timezone
-from datetime import timedelta
+from datetime import date, timedelta
 from decimal import Decimal
 
 class Category(models.Model):
@@ -56,7 +56,7 @@ class Expense(models.Model):
     )
 
     card = models.ForeignKey(
-        Card,
+        'cards.Card',
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
@@ -90,7 +90,10 @@ class Expense(models.Model):
         if self.installments.exists():
             return
 
-        installment_value = self.total_value / Decimal(self.installments_quantity).quantize(Decimal('0.01'))
+        installment_value = (
+            self.total_value / Decimal(self.installments_quantity)
+        ).quantize(Decimal('0.01'))
+
 
         for i in range(1, self.installments_quantity + 1):
             Installment.objects.create(
@@ -99,6 +102,33 @@ class Expense(models.Model):
                 value=installment_value,
                 due_date=self.purchase_date + timedelta(days=30 * i)
             )
+    def remaining_installments(self):
+        if self.payment_type != self.PaymentType.CARTAO or not self.card:
+            return 0 if self.concluded else self.installments_quantity
+
+        today = date.today()
+
+        current_month = today.month
+        current_year = today.year
+
+        paid_installments = 0
+
+        for inst in self.installments.all():
+            due = inst.due_date
+
+            if (
+                (current_year > due.year) or
+                (current_year == due.year and current_month > due.month) or
+                (
+                    current_year == due.year and
+                    current_month == due.month and
+                    today.day > self.card.due_day
+                )
+            ):
+                paid_installments += 1
+
+        remaining = self.installments_quantity - paid_installments
+        return max(remaining, 0)
     
 class Installment(models.Model):
     expense = models.ForeignKey(
@@ -130,44 +160,23 @@ class FixedCommitment(models.Model):
         related_name='fixed_commitments'
     )
 
+    category = models.ForeignKey(
+        Category,
+        on_delete=models.PROTECT,
+        related_name='fixed_commitments'
+    )
+
     name = models.CharField(max_length=150)
     value = models.DecimalField(max_digits=10, decimal_places=2)
 
-    start_date = models.DateField()
-    end_date = models.DateField(null=True, blank=True)
+    due_day = models.PositiveSmallIntegerField()
 
     active = models.BooleanField(default=True)
-
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f'{self.name} - {self.value}'
 
-class PersonDebt(models.Model):
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        related_name='person_debts'
-    )
-
-    person_name = models.CharField(max_length=100)
-
-    expense = models.ForeignKey(
-        Expense,
-        on_delete=models.CASCADE,
-        related_name='person_debts'
-    )
-
-    value = models.DecimalField(max_digits=10, decimal_places=2)
-
-    paid = models.BooleanField(default=False)
-    paid_at = models.DateField(null=True, blank=True)
-
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f'{self.person_name} - {self.value}'
-    
 class PersonDebt(models.Model):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
