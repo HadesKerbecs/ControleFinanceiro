@@ -142,6 +142,8 @@ Acesse:
 - http://localhost:4200
 
 📁 Estrutura do Projeto
+
+```text
 controle-financeiro/
 ├── backend/
 │   ├── accounts/
@@ -157,6 +159,7 @@ controle-financeiro/
 ├── docker-compose.yml
 ├── README.md
 └── .gitignore
+```
 
 📌 Status do Projeto
 ✔ Backend completo
