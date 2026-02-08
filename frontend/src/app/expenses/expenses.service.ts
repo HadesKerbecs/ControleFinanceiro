@@ -11,8 +11,8 @@ export class ExpensesService {
     let params = new HttpParams();
 
     Object.keys(filters).forEach(key => {
-      if (filters[key]) {
-        params = params.set(key, filters[key]);
+      if (filters[key] !== null && filters[key] !== undefined) {
+        params = params.set(key, String(filters[key]));
       }
     });
 
@@ -24,11 +24,18 @@ export class ExpensesService {
   }
 
   updateExpense(id: number, data: any) {
-    return this.http.put(`${this.api}/${id}/`, data);
+    return this.http.patch(`http://127.0.0.1:8000/api/expenses/${id}/`, data);
   }
 
   deleteExpense(id: number) {
-    return this.http.delete(`${this.api}/${id}/`);
+    return this.http.delete(`${this.api}${id}/`);
+  }
+
+  unpayInstallment(id: number) {
+    return this.http.post(
+      `http://127.0.0.1:8000/api/installments/${id}/unpay/`,
+      {}
+    );
   }
 
   payInstallment(id: number) {

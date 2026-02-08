@@ -45,6 +45,16 @@
     </div>
   </div>
 
+  <div class="row">
+    <div>
+      <input type="number" placeholder="Fechamento da fatura (dia)" formControlName="closing_day" min="1" max="31" />
+    </div>
+
+    <div>
+      <input type="number" placeholder="Vencimento da fatura (dia)" formControlName="due_day" min="1" max="31" />
+    </div>
+  </div>
+
   <small class="error" *ngIf="form.errors?.['expired']">
     O cartão já está vencido
   </small>

@@ -1,14 +1,21 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { Sidebar } from '../../shared/sidebar/sidebar';
+import { AuthService } from '../services/auth';
 import { Header } from '../../shared/header/header';
+import { Sidebar } from '../../shared/sidebar/sidebar';
 
 @Component({
   selector: 'app-layout',
-  imports: [RouterOutlet, Sidebar, Header],
+  standalone: true,
+  imports: [RouterOutlet, Header, Sidebar],
   templateUrl: './layout.html',
-  styleUrl: './layout.scss',
+  styleUrls: ['./layout.scss']
 })
-export class Layout {
+export class Layout implements OnInit {
 
+  constructor(private auth: AuthService) {}
+
+  ngOnInit(): void {
+    this.auth.startTokenExpirationWatcher();
+  }
 }

@@ -55,16 +55,10 @@ MIDDLEWARE = [
 
 CORS_ALLOW_ALL_ORIGINS = True
 
-CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_BROKER_URL = 'redis://redis:6379/0'
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
-CELERY_BEAT_SCHEDULE = {
-    'auto-pay-installments-daily': {
-        'task': 'finance.tasks.auto_pay_installments',
-        'schedule': 3600 * 24,
-    },
-}
-
+CELERY_TIMEZONE = 'America/Sao_Paulo'
 
 CORS_ALLOW_HEADERS = list(default_headers) + [
     'authorization',
@@ -95,7 +89,7 @@ DATABASES = {
         'NAME': 'controle_financeiro',
         'USER': 'financeiro_user',
         'PASSWORD': '123456',
-        'HOST': 'localhost',
+        'HOST': 'db',
         'PORT': '5432',
     }
 }

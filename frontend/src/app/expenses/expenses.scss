@@ -6,7 +6,17 @@
 }
 
 .new-expense-btn {
-  margin-left: auto;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: #fff;
+  border-radius: 12px;
+  padding: 10px 18px;
+  font-weight: 600;
+  transition: all .25s ease;
+}
+
+.new-expense-btn:hover {
+  background: linear-gradient(135deg, #1d4ed8, #1e40af);
+  transform: translateY(-1px);
 }
 
 /* =======================
@@ -45,6 +55,31 @@
   height: 44px;
   min-width: 90px;
 }
+
+/* FILTRAR */
+.actions button.primary {
+  background: #2563eb;
+  color: #fff;
+  border: none;
+}
+
+.actions button.primary:hover {
+  background: #1d4ed8;
+}
+
+/* LIMPAR */
+.actions button.outline {
+  background: transparent;
+  border: 1px solid #cbd5e1;
+  color: #475569;
+}
+
+.actions button.outline:hover {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+  color: #1e293b;
+}
+
 
 /* =======================
    LISTA
@@ -122,14 +157,33 @@
   background: transparent;
   border: none;
   cursor: pointer;
-
+  opacity: 0.65;
+  transition: all .2s ease;
   font-size: 15px;
   padding: 4px;
   line-height: 1;
+  color: #475569;
+  opacity: 0.65;
+}
+.expense .actions .icon:hover {
+  opacity: 1;
+  transform: scale(1.1);
 }
 
 .expense .actions .icon.danger {
   color: #ef4444;
+}
+
+.expense .actions .icon.danger:hover {
+  color: #dc2626;
+}
+
+.expense:has(.status.paid) {
+  border-left: 4px solid #22c55e;
+}
+
+.expense:has(.status.pending) {
+  border-left: 4px solid #eab308;
 }
 
 .pay-btn {
@@ -139,26 +193,106 @@
   white-space: nowrap;
 }
 
+/* botão principal (já existe visualmente) */
+.pay-btn.primary {
+  background: #2563eb;
+  color: #fff;
+}
+
+.pay-btn.success {
+  background: #22c55e;
+  color: #fff;
+}
+
+.pay-btn.success:hover {
+  background: #16a34a;
+}
+
+/* desfazer pagamento */
+.pay-btn.outline-warning {
+  background: transparent;
+  border: 1px solid #f59e0b;
+  color: #92400e;
+}
+
+.pay-btn.outline-warning:hover {
+  background: rgba(245, 158, 11, 0.15);
+}
+
+
 /* =======================
    MODAL
 ======================= */
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.55);
   backdrop-filter: blur(6px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
+  padding: 16px;
 }
 
 .modal {
-  width: 420px;
-  padding: 24px;
-  border-radius: 16px;
+  width: 100%;
+  max-width: 360px; /* 🔥 MENOR = MAIS PROPORCIONAL */
+  padding: 20px 22px;
+  border-radius: 14px;
   background: #ffffff;
   color: #0f172a;
+}
+
+/* confirmação */
+.confirm-modal {
+  display: flex;
+  flex-direction: column;
+  gap: 12px; /* 🔥 menos espaço morto */
+  text-align: center;
+}
+
+/* título */
+.confirm-modal h3 {
+  font-size: 15px;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* texto */
+.confirm-modal p {
+  font-size: 13px;
+  opacity: 0.75;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* ações */
+.confirm-modal .actions {
+  display: flex;
+  justify-content: space-between; /* 🔥 equilíbrio visual */
+  gap: 12px;
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid #e5e7eb; /* 🔥 BASE VISUAL */
+}
+
+/* botões */
+.confirm-modal button {
+  height: 40px;
+  min-width: 120px;
+  border-radius: 999px; /* 🔥 segue padrão pay-btn */
+  font-size: 13px;
+}
+
+/* perigo */
+button.danger {
+  background: #ef4444;
+  color: #fff;
+}
+
+button.danger:hover {
+  background: #dc2626;
 }
 
 /* =======================
@@ -200,8 +334,10 @@
   }
 
   .expense .actions .icon {
-    font-size: 14px;        /* ÍCONE MENOR */
-    padding: 4px;           /* MENOS ÁREA CLICÁVEL */
+    font-size: 14px;
+    /* ÍCONE MENOR */
+    padding: 4px;
+    /* MENOS ÁREA CLICÁVEL */
     line-height: 1;
   }
 }
@@ -218,4 +354,24 @@
     grid-column: span 2;
     justify-content: space-between;
   }
+}
+
+@media (max-width: 480px) {
+  .modal {
+    max-width: 100%;
+  }
+
+  .confirm-modal .actions {
+    flex-direction: column-reverse;
+  }
+
+  .confirm-modal button {
+    width: 100%;
+  }
+}
+
+.auto {
+  font-size: 11px;
+  color: #2563eb;
+  font-weight: 600;
 }

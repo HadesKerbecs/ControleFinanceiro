@@ -17,9 +17,16 @@
       <span>Vence dia {{ c.due_day }}</span>
     </div>
 
-    <button class="secondary-btn" (click)="toggle(c)">
-      {{ c.active ? 'Desativar' : 'Ativar' }}
-    </button>
+    <div class="actions">
+      <a [routerLink]="['/fixed-commitments', c.id, 'edit']" class="secondary-btn">
+        Editar
+      </a>
+
+      <button class="secondary-btn" (click)="toggle(c)">
+        {{ c.active ? 'Desativar' : 'Ativar' }}
+      </button>
+    </div>
+    
   </div>
 
 </div>

@@ -2,14 +2,15 @@
 
   <div class="cards-header">
     <h1 class="page-title">Cartões</h1>
-    <button class="primary" (click)="openForm()">+ Novo Cartão</button>
+    <button class="primary new-card-btn" (click)="openForm()">
+      <span class="material-icons">add</span>
+      Novo Cartão
+    </button>
+
   </div>
 
   <div class="form-overlay" *ngIf="showForm">
-    <app-card-form
-      [card]="selectedCard"
-      (saved)="closeForm()"
-      (cancel)="showForm = false; selectedCard = null">
+    <app-card-form [card]="selectedCard" (saved)="closeForm()" (cancel)="showForm = false; selectedCard = null">
     </app-card-form>
   </div>
 
@@ -24,10 +25,7 @@
   <div class="cards-grid" *ngIf="!loading && cards.length > 0">
     <div class="card-wrapper" *ngFor="let card of cards">
 
-      <div
-        class="credit-card"
-        [class.expired]="isCardExpired(card)"
-        [ngStyle]="{
+      <div class="credit-card" [class.expired]="isCardExpired(card)" [ngStyle]="{
           background: 'linear-gradient(135deg,' + getCardColor(card.bank_name) + ', #020617)'
         }">
 
@@ -36,18 +34,14 @@
           <span class="brand">{{ card.brand }}</span>
 
           <div class="card-actions">
-            <button
-              title="Editar"
-              (click)="editCard(card)"
-              [disabled]="!canEditCard(card)">
-              ✏️
+            <button class="icon" title="Editar" (click)="editCard(card)" [disabled]="!canEditCard(card)">
+              <span class="material-icons">edit</span>
             </button>
 
-            <button
-              title="Remover"
-              (click)="deleteCard(card)">
-              🗑️
+            <button class="icon danger" title="Remover" (click)="deleteCard(card)">
+              <span class="material-icons">delete</span>
             </button>
+
           </div>
         </div>
 
@@ -70,10 +64,7 @@
 
       <div class="card-info">
         <div class="usage-bar">
-          <div
-            class="usage-progress"
-            [style.width.%]="getUsagePercent(card)"
-            [class.safe]="getUsagePercent(card) < 50"
+          <div class="usage-progress" [style.width.%]="getUsagePercent(card)" [class.safe]="getUsagePercent(card) < 50"
             [class.warning]="getUsagePercent(card) >= 50 && getUsagePercent(card) < 80"
             [class.danger]="getUsagePercent(card) >= 80">
           </div>
@@ -95,5 +86,26 @@
 
     </div>
   </div>
+  <div class="overlay" *ngIf="confirmDelete">
+    <div class="modal confirm-modal">
+      <h3>Confirmar exclusão</h3>
+
+      <p>
+        Realmente deseja remover o cartão
+        <strong>{{ cardToDelete?.bank_name }}</strong>?
+      </p>
+
+      <div class="actions">
+        <button class="outline" (click)="cancelDelete()">
+          Cancelar
+        </button>
+
+        <button class="danger" (click)="confirmDeleteCard()">
+          Remover
+        </button>
+      </div>
+    </div>
+  </div>
+
 
 </div>

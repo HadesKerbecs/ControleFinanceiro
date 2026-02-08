@@ -36,6 +36,30 @@ export class DashboardService {
   }
 
   getFixedCommitments() {
-  return this.http.get<any[]>('http://127.0.0.1:8000/api/fixed-commitments/');
+    return this.http.get<any[]>('http://127.0.0.1:8000/api/fixed-commitments/');
+  }
+
+  getCategoryTotals() {
+    return this.http.get<any>(`${this.api}categories-total/`);
+  }
+
+  getByCardTotal() {
+    return this.http.get<any>(`${this.api}by-card-total/`);
+  }
+
+  getMonthlyRealCost() {
+    return this.http.get<any>(`${this.api}monthly-real-cost-fixed/`);
+  }
+
+  getFuturePlanning() {
+    return this.http.get<any>(`${this.api}future-planning/`);
+  }
+
+  getSubcategoryTotals() {
+    return this.http.get<any>(`${this.api}subcategories-total/`);
+  }
+
+  getThirdPartyGauge() {
+    return this.http.get<any>(`${this.api}third-party-gauge/`);
   }
 }

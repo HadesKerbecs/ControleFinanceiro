@@ -11,9 +11,17 @@
       </small>
     </div>
 
-    <div class="field">
+    <div class="field password-field">
       <label>Senha</label>
-      <input type="password" formControlName="password" />
+
+      <div class="password-wrapper">
+        <input [type]="showPassword ? 'text' : 'password'" formControlName="password" />
+
+        <span class="toggle-password" (click)="togglePassword()">
+          {{ showPassword ? 'Ocultar' : 'Mostrar' }}
+        </span>
+      </div>
+
       <small *ngIf="form.controls.password.invalid && form.controls.password.touched">
         Senha obrigatória
       </small>

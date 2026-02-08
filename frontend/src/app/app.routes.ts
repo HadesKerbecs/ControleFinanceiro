@@ -28,7 +28,7 @@ export const routes: Routes = [
         path: 'dashboard',
         loadComponent: () =>
           import('./dashboard/dashboard').then(m => m.Dashboard),
-         data: { title: 'Dashboard' }
+        data: { title: 'Dashboard' }
       },
       {
         path: 'cards',
@@ -65,6 +65,14 @@ export const routes: Routes = [
             .then(m => m.FixedCommitmentForm),
         runGuardsAndResolvers: 'always',
         data: { title: 'Novo Compromisso Fixo' }
+      },
+      {
+        path: 'fixed-commitments/:id/edit',
+        loadComponent: () =>
+          import('./fixed-commitments/fixed-commitments-form/fixed-commitment-form')
+            .then(m => m.FixedCommitmentForm),
+        runGuardsAndResolvers: 'always',
+        data: { title: 'Editar Compromisso Fixo' }
       },
 
     ],

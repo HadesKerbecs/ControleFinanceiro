@@ -8,21 +8,17 @@ def auto_pay_installments():
 
     installments = Installment.objects.filter(
         paid=False,
-        due_date__month=today.month,
-        due_date__year=today.year,
-        due_date__lte=today
+        expense__debito_automatico=True,
+        payment_date__lte=today
     )
 
-    for installment in installments:
-        installment.paid = True
-        installment.paid_at = today
-        installment.save(update_fields=['paid', 'paid_at'])
+    for inst in installments:
+        inst.paid = True
+        inst.paid_at = today
+        inst.save(update_fields=['paid', 'paid_at'])
 
         History.objects.create(
-            user=installment.expense.user,
-            action='PAY',
-            description=(
-                f'Parcela {installment.number} paga automaticamente '
-                f'da despesa "{installment.expense.description}"'
-            )
+            user=inst.expense.user,
+            action=History.ActionType.PAY,
+            description=f'Parcela {inst.number} paga automaticamente'
         )

@@ -1,31 +1,56 @@
+/* =======================
+   CONTAINER GERAL
+======================= */
 .dashboard {
-  padding: 32px;
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 32px;
+  padding: 5px;
   width: 100%;
+  overflow-x: hidden;
 }
 
+.section-highlight {
+  background: linear-gradient(90deg, #2563eb, #3b82f6); // verde estilo exemplo
+  color: #ffffff;
+  padding: 12px 18px;
+  border-radius: 12px 12px 8px 8px;
+  margin: 24px 0 0px;
+  font-size: 18px;
+  font-weight: 700;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.10);
+  position: relative;
+  z-index: 2;
+}
+
+/* =======================
+   GRID PRINCIPAL
+======================= */
 .dashboard-top {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, 1fr);
   gap: 32px;
 }
 
-@media (max-width: 1024px) {
-  .dashboard-top {
-    grid-template-columns: 1fr;
-  }
-}
-
+/* =======================
+   CARTÕES DE GRÁFICO
+======================= */
 .chart-card {
   width: 100%;
   min-height: 360px;
   background: #ffffff;
+
   border: 1px solid #e2e8f0;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  border-radius: 14px;
+
   padding: 16px;
-  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+
+  position: relative;
+  z-index: 1;
+
+  overflow: hidden;
+}
+
+.content {
+  overflow-y: auto;
 }
 
 .chart-title {
@@ -35,11 +60,33 @@
   margin-bottom: 12px;
 }
 
-.alerts {
-  max-width: 720px;
-  margin: 0 auto;
+/* =======================
+   GRÁFICOS EM PAR (DONUT)
+======================= */
+.chart-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+/* =======================
+   EMPTY STATE
+======================= */
+.empty-state {
+  flex: 1;
   display: flex;
-  color: #0f172a;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  font-size: 14px;
+  text-align: center;
+}
+
+/* =======================
+   ALERTAS
+======================= */
+.alerts {
+  display: flex;
   flex-direction: column;
   gap: 12px;
 }
@@ -64,44 +111,19 @@
   background: linear-gradient(135deg, #1e40af, #1e3a8a);
 }
 
-
-@media (max-width: 768px) {
-  .chart-card {
-    max-width: 100%;
-    padding: 16px;
-    border-radius: 12px;
-  }
-
-  .dashboard {
-    padding: 16px;
-  }
-
-  .alerts {
-    padding: 0;
-  }
-}
-
-@media (max-width: 768px) {
-  .chart-card {
-    max-width: 100%;
-    padding: 16px;
-    border-radius: 12px;
-  }
-
-  .dashboard {
-    padding: 16px;
-  }
-
-  .alerts {
-    padding: 0;
-  }
+/* =======================
+   METAS
+======================= */
+.goals {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
 }
 
 .goal-card {
   background: #ffffff;
   padding: 16px;
   border-radius: 12px;
-  margin-bottom: 16px;
   border: 1px solid #e2e8f0;
 }
 
@@ -125,4 +147,204 @@
 
 .goal-progress.danger {
   background: #ef4444;
+}
+
+/* =======================
+   TABLET (≤ 1024px)
+======================= */
+@media (max-width: 1024px) {
+  .dashboard-top {
+    grid-template-columns: 1fr;
+  }
+
+  .chart-pair {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =======================
+   MOBILE (≤ 768px)
+======================= */
+@media (max-width: 768px) {
+  .dashboard {
+    padding: 16px;
+  }
+
+  .chart-card {
+    min-height: auto;
+    padding: 14px;
+  }
+
+  .chart-title {
+    font-size: 15px;
+  }
+
+  .alert {
+    font-size: 13px;
+  }
+
+  .apx-chart {
+    min-height: 300px;
+  }
+
+  .gauge-footer {
+    margin-top: 0;
+    padding-top: 8px;
+  }
+
+  .chart-scroll apx-chart {
+    min-width: 600px;
+  }
+}
+
+.chart-scroll {
+  overflow-x: auto;
+  overflow-y: hidden;
+  max-width: 100%;
+}
+
+/* =======================
+   MOBILE PEQUENO (≤ 480px)
+======================= */
+@media (max-width: 480px) {
+  .chart-title {
+    font-size: 14px;
+  }
+
+  .empty-state {
+    font-size: 13px;
+    padding: 12px;
+  }
+
+  .section-highlight {
+    font-size: 16px;
+    padding: 10px 14px;
+  }
+}
+
+.chart-wide {
+  grid-column: 1 / -1;
+  min-height: 400px;
+}
+
+/* =======================
+   TÍTULOS DE SEÇÃO
+======================= */
+.section-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 24px 0 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+/* =======================
+   ALERTAS
+======================= */
+.alerts-wrapper {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.alert-card {
+  padding: 14px 18px;
+  border-radius: 12px;
+  font-size: 14px;
+  line-height: 1.4;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+
+.alert-card strong {
+  font-weight: 700;
+}
+
+.alert-card.warning {
+  background: #fff7ed;
+  border-color: #f59e0b;
+  color: #92400e;
+}
+
+.alert-card.danger {
+  background: #fef2f2;
+  border-color: #ef4444;
+  color: #7f1d1d;
+}
+
+.alert-card.info {
+  background: #eff6ff;
+  border-color: #3b82f6;
+  color: #1e3a8a;
+}
+
+/* =======================
+   METAS
+======================= */
+.goals-wrapper {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.goal-card {
+  background: #ffffff;
+  padding: 16px;
+  border-radius: 14px;
+  border: 1px solid #e2e8f0;
+}
+
+.goal-card h4 {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: #0f172a;
+}
+
+.goal-bar {
+  height: 10px;
+  background: #e5e7eb;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+
+.goal-progress {
+  height: 100%;
+  background: #22c55e;
+  transition: width 0.3s ease;
+}
+
+.goal-progress.warning {
+  background: #f59e0b;
+}
+
+.goal-progress.danger {
+  background: #ef4444;
+}
+
+.goal-card small {
+  font-size: 13px;
+  color: #475569;
+}
+
+.gauge-footer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: -20px;
+  padding: 0 24px;
+
+  span {
+    font-size: 13px;
+    color: #64748b;
+  }
+
+  strong {
+    display: block;
+    font-size: 15px;
+    color: #0f172a;
+  }
 }

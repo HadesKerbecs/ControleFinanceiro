@@ -106,3 +106,22 @@ button {
     }
   }
 }
+
+.password-wrapper {
+  position: relative;
+}
+
+.password-wrapper input {
+  width: 100%;
+  padding-right: 70px;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 0;
+  bottom: 10px;
+  font-size: 13px;
+  color: #2563eb;
+  cursor: pointer;
+  user-select: none;
+}

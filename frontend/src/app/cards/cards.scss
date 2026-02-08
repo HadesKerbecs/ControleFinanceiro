@@ -139,13 +139,30 @@
   gap: 8px;
 }
 
-.card-actions button {
+.card-actions .icon {
   background: transparent;
   border: none;
-  color: #e5e7eb;
   cursor: pointer;
-  font-size: 14px;
+  color: #e5e7eb;
+  opacity: 0.75;
+  display: inline-flex;
+  align-items: center;
+  transition: all .2s ease;
 }
+
+.card-actions .icon:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.card-actions .icon.danger {
+  color: #fca5a5;
+}
+
+.card-actions .icon.danger:hover {
+  color: #ef4444;
+}
+
 
 .credit-card.expired {
   filter: grayscale(0.4) brightness(0.8);
@@ -179,4 +196,91 @@
 
 .usage-progress.danger {
   background: #ef4444;
+}
+
+/* =======================
+   MODAL CONFIRMAÇÃO
+======================= */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(2, 6, 23, 0.7);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px; /* mobile safe */
+}
+
+.modal {
+  width: 100%;
+  max-width: 360px; /* ⬅️ menor que antes */
+  padding: 20px 18px; /* ⬅️ reduz laterais */
+  border-radius: 14px;
+  background: #ffffff;
+  color: #0f172a;
+}
+
+.confirm-modal {
+  display: flex;
+  flex-direction: column;
+  gap: 12px; /* ⬅️ menos espaçamento vertical */
+  text-align: center;
+}
+
+.confirm-modal h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.confirm-modal p {
+  font-size: 14px;
+  opacity: 0.85;
+  margin: 0;
+  line-height: 1.4; /* ⬅️ mais compacto */
+}
+
+.confirm-modal .actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+/* botões */
+.confirm-modal button {
+  min-width: 96px;
+  height: 40px;
+  border-radius: 10px;
+  font-size: 13px;
+}
+
+/* variações */
+button.outline {
+  background: transparent;
+  border: 1px solid #cbd5f5;
+  color: #1e3a8a;
+}
+
+button.outline:hover {
+  background: #eef2ff;
+}
+
+button.danger {
+  background: #ef4444;
+  border: none;
+  color: #fff;
+}
+
+button.danger:hover {
+  background: #dc2626;
+}
+
+.new-card-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }

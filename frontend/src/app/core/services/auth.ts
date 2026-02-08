@@ -1,13 +1,21 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { tap } from 'rxjs';
+import { ToastrService } from 'ngx-toastr';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private api = 'http://127.0.0.1:8000/api/auth';
+  private expirationTimer: any;
 
-  constructor(private http: HttpClient) { }
+  constructor(
+    private http: HttpClient,
+    private toastr: ToastrService
+  ) {}
 
+  /* =========================
+     LOGIN
+  ========================= */
   login(data: { username: string; password: string }) {
     return this.http.post<any>(`${this.api}/login/`, data).pipe(
       tap(res => {
@@ -16,14 +24,17 @@ export class AuthService {
 
         localStorage.setItem(
           'auth_user',
-          JSON.stringify({
-            username: data.username
-          })
+          JSON.stringify({ username: data.username })
         );
+
+        this.startTokenExpirationWatcher();
       })
     );
   }
 
+  /* =========================
+     REGISTER
+  ========================= */
   register(data: any) {
     return this.http.post(`${this.api}/register/`, {
       username: data.username,
@@ -32,17 +43,68 @@ export class AuthService {
     });
   }
 
+  /* =========================
+     LOGOUT
+  ========================= */
   logout() {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
     localStorage.removeItem('auth_user');
+
+    if (this.expirationTimer) {
+      clearTimeout(this.expirationTimer);
+      this.expirationTimer = null;
+    }
   }
 
+  /* =========================
+     AUTH STATUS
+  ========================= */
   isAuthenticated(): boolean {
     return !!localStorage.getItem('access_token');
   }
 
   get token(): string | null {
     return localStorage.getItem('access_token');
+  }
+
+  /* =========================
+     TOKEN EXPIRATION
+  ========================= */
+  private getTokenExpiration(): number | null {
+    const token = localStorage.getItem('access_token');
+    if (!token) return null;
+
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload.exp ? payload.exp * 1000 : null;
+    } catch {
+      return null;
+    }
+  }
+
+  startTokenExpirationWatcher() {
+    const expiration = this.getTokenExpiration();
+    if (!expiration) return;
+
+    const now = Date.now();
+    const timeLeft = expiration - now;
+
+    // avisa 2 minutos antes
+    const warnBefore = 2 * 60 * 1000;
+
+    if (timeLeft <= 0) {
+      this.logout();
+      return;
+    }
+
+    if (timeLeft > warnBefore) {
+      this.expirationTimer = setTimeout(() => {
+        this.toastr.warning(
+          'Sua sessão vai expirar em breve.',
+          'Atenção'
+        );
+      }, timeLeft - warnBefore);
+    }
   }
 }

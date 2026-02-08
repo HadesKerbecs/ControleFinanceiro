@@ -32,3 +32,14 @@ class CardSerializer(serializers.ModelSerializer):
             'available_limit',
             'is_over_limit',
         )
+
+def validate(self, data):
+        closing = data.get('closing_day')
+        due = data.get('due_day')
+
+        if closing and due and closing >= due:
+            raise serializers.ValidationError({
+                'due_day': 'O vencimento deve ser após o fechamento da fatura'
+            })
+
+        return data

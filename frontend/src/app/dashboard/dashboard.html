@@ -1,99 +1,112 @@
-<div class="dashboard">
-  <div class="dashboard-top">
+<div class="dashboard" #dashboardContainer>
 
-    <!-- GRÁFICO DONUT -->
-    <div class="chart-card">
-      <h3 class="chart-title">Gastos por categoria (mês atual)</h3>
+  <!-- =========================
+       DISTRIBUIÇÃO DOS GASTOS
+  ========================== -->
+  <div class="section-block">
+    <div class="section-highlight">
+      Distribuição dos gastos
+    </div>
 
-      <apx-chart *ngIf="series.length > 0" [series]="series" [chart]="chart" [labels]="labels" [theme]="theme"
-        [legend]="legend">
-      </apx-chart>
+    <div class="chart-pair">
+      <!-- Categoria mês -->
+      <div class="chart-card">
+        <h3 class="chart-title">Gastos por categoria (mês atual)</h3>
 
-      <div *ngIf="series.length === 0" class="empty-state">
-        Nenhum dado para o mês atual
+        <ng-container *ngIf="series.length && labels.length; else emptyCurrent">
+          <apx-chart [series]="series" [chart]="chart" [labels]="labels" [legend]="legend" [theme]="theme">
+          </apx-chart>
+        </ng-container>
+
+        <ng-template #emptyCurrent>
+          <div class="empty-state">Nenhum gasto registrado neste mês</div>
+        </ng-template>
+      </div>
+
+      <!-- Categoria total -->
+      <div class="chart-card">
+        <h3 class="chart-title">Gastos por categoria (total)</h3>
+
+        <ng-container *ngIf="totalSeries.length && totalLabels.length; else emptyTotal">
+          <apx-chart [series]="totalSeries" [chart]="chart" [labels]="totalLabels" [legend]="legend" [theme]="theme">
+          </apx-chart>
+        </ng-container>
+
+        <ng-template #emptyTotal>
+          <div class="empty-state">Nenhum gasto registrado até o momento</div>
+        </ng-template>
       </div>
     </div>
 
-    <!-- GRÁFICO EVOLUÇÃO MENSAL -->
-    <div class="chart-card">
+    <!-- Subcategoria -->
+    <div class="chart-card chart-wide">
+      <h3 class="chart-title">Gastos por subcategoria (total)</h3>
+
+      <apx-chart *ngIf="subcategorySeries.length && subcategoryXAxis.categories.length" [series]="subcategorySeries" [chart]="subcategoryChart"
+        [xaxis]="subcategoryXAxis" [plotOptions]="subcategoryPlotOptions" [theme]="theme">
+      </apx-chart>
+
+      <div *ngIf="!subcategorySeries.length" class="empty-state">
+        Nenhum gasto registrado
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================
+       EVOLUÇÃO HISTÓRICA
+  ========================== -->
+  <div class="section-block">
+    <div class="section-highlight">
+      Evolução dos gastos
+    </div>
+
+    <div class="chart-card chart-wide">
       <h3 class="chart-title">Evolução mensal de gastos</h3>
 
-      <apx-chart *ngIf="monthlySeries.length > 0" [series]="monthlySeries" [chart]="monthlyChart" [xaxis]="monthlyXAxis"
+      <apx-chart *ngIf="monthlySeries.length && monthlyXAxis.categories.length" [series]="monthlySeries" [chart]="monthlyChart" [xaxis]="monthlyXAxis"
         [stroke]="monthlyStroke" [theme]="theme">
       </apx-chart>
 
-      <div *ngIf="monthlySeries.length === 0" class="empty-state">
+      <div *ngIf="!monthlySeries.length" class="empty-state">
         Nenhum dado de evolução disponível
       </div>
     </div>
+  </div>
 
-    <!-- GRÁFICO POR CARTÃO -->
-    <div class="chart-card">
-      <h3 class="chart-title">Gastos por cartão (mês atual)</h3>
-
-      <apx-chart *ngIf="cardSeries.length > 0" [series]="cardSeries" [chart]="cardChart" [labels]="cardLabels"
-        [theme]="theme" [legend]="legend">
-      </apx-chart>
-
-      <div *ngIf="cardSeries.length === 0" class="empty-state">
-        Nenhum gasto por cartão neste mês
-      </div>
-    </div>
-
-    <!-- COMPARAÇÃO DE MESES -->
-    <div class="chart-card">
-      <h3 class="chart-title">Comparação de gastos: mês atual x anterior</h3>
-
-      <apx-chart *ngIf="comparisonSeries.length > 0" [series]="comparisonSeries" [chart]="comparisonChart"
-        [xaxis]="comparisonXAxis" [plotOptions]="comparisonPlotOptions" [theme]="theme">
-      </apx-chart>
-
-      <div *ngIf="comparisonSeries.length === 0" class="empty-state">
-        Sem dados para comparação
-      </div>
+  <!-- =========================
+       SITUAÇÃO DO MÊS
+  ========================== -->
+  <div class="section-block">
+    <div class="section-highlight">
+      Situação do mês
     </div>
 
     <!-- ALERTAS -->
-    <div class="alerts" *ngIf="alerts">
-      <h3 class="card-title">Próximos vencimentos</h3>
+    <div class="alerts-wrapper" *ngIf="alerts">
 
-      <div class="alert warning" *ngIf="alerts.salary_percentage >= 50 && alerts.salary_percentage < 70">
-        Você já comprometeu {{ alerts.salary_percentage }}% do salário
+      <div class="alert-card danger" *ngIf="alerts.salary_percentage >= 70">
+        🔴 Você já comprometeu
+        <strong>{{ alerts.salary_percentage }}%</strong>
+        do seu salário neste mês
       </div>
 
-      <div class="alert danger" *ngIf="alerts.salary_percentage >= 70">
-        Atenção: {{ alerts.salary_percentage }}% do salário comprometido
+      <div class="alert-card warning" *ngIf="alerts.salary_percentage >= 50 && alerts.salary_percentage < 70">
+        ⚠️ Você já comprometeu
+        <strong>{{ alerts.salary_percentage }}%</strong>
+        do seu salário neste mês
       </div>
 
-      <div class="alert info" *ngFor="let item of alerts.due_soon">
-        {{ item.description }}
-        vence em {{ item.due_date }}
-        — R$ {{ item.value }}
-      </div>
-
-      <div class="alert info" *ngFor="let fixo of alerts.fixed_commitments">
-        Compromisso fixo: {{ fixo.name }} — R$ {{ fixo.value }}
-      </div>
-
-    </div>
-
-    <!-- COMPROMISSOS FIXOS -->
-    <div class="alerts" *ngIf="fixedCommitments.length > 0">
-      <h3 class="card-title">Compromissos fixos do mês</h3>
-
-      <div class="alert info" *ngFor="let fixo of fixedCommitments">
-        {{ fixo.name }} — R$ {{ fixo.value }}
-        <span *ngIf="fixo.days_to_due === 0">(vence hoje)</span>
-        <span *ngIf="fixo.days_to_due > 0">(vence em {{ fixo.days_to_due }} dias)</span>
-        <span *ngIf="fixo.days_to_due < 0">(vencido)</span>
+      <div class="alert-card info" *ngIf="alerts.due_soon?.length">
+        📌 {{ alerts.due_soon.length }}
+        parcela(s) vencem nos próximos 7 dias
       </div>
     </div>
 
-    <div class="goals">
+    <!-- METAS -->
+    <div class="goals-wrapper">
 
-      <!-- META PELO SALÁRIO LÍQUIDO -->
       <div class="goal-card" *ngIf="salaryGoal">
-        <h3>Meta mensal (salário líquido)</h3>
+        <h4>Meta pelo salário líquido</h4>
 
         <div class="goal-bar">
           <div class="goal-progress" [class.warning]="salaryGoal.percentage >= 70"
@@ -102,15 +115,14 @@
         </div>
 
         <small>
-          R$ {{ salaryGoal.used }}
-          / R$ {{ salaryGoal.limit }}
+          R$ {{ salaryGoal.used }} /
+          R$ {{ salaryGoal.limit }}
           ({{ salaryGoal.percentage }}%)
         </small>
       </div>
 
-      <!-- META PELO LIMITE SUGERIDO -->
       <div class="goal-card" *ngIf="limitGoal">
-        <h3>Meta mensal sugerida (70%)</h3>
+        <h4>Meta pelo limite sugerido</h4>
 
         <div class="goal-bar">
           <div class="goal-progress" [class.warning]="limitGoal.percentage >= 70"
@@ -119,44 +131,116 @@
         </div>
 
         <small>
-          R$ {{ limitGoal.used }}
-          / R$ {{ limitGoal.limit }}
+          R$ {{ limitGoal.used }} /
+          R$ {{ limitGoal.limit }}
           ({{ limitGoal.percentage }}%)
-        </small>
-      </div>
-
-      <div class="goal-card" *ngFor="let cat of categoryGoals">
-        <h4>{{ cat.category }}</h4>
-
-        <div class="goal-bar">
-          <div class="goal-progress" [class.warning]="cat.percentage >= 70" [class.danger]="cat.percentage >= 90"
-            [style.width.%]="cat.percentage">
-          </div>
-        </div>
-
-        <small>
-          R$ {{ cat.used }} / R$ {{ cat.limit }} ({{ cat.percentage }}%)
-        </small>
-      </div>
-
-      <!-- METAS POR CATEGORIA (FUTURO) -->
-      <div class="goal-card" *ngFor="let cat of goals?.categories">
-        <h4>{{ cat.category }}</h4>
-
-        <div class="goal-bar">
-          <div class="goal-progress" [class.warning]="cat.percentage >= 70" [class.danger]="cat.percentage >= 90"
-            [style.width.%]="cat.percentage">
-          </div>
-        </div>
-
-        <small>
-          R$ {{ cat.used }}
-          / R$ {{ cat.limit }}
-          ({{ cat.percentage }}%)
         </small>
       </div>
 
     </div>
 
+    <div class="chart-card chart-wide">
+      <h3 class="chart-title">Parcelas que vencem: mês atual x anterior</h3>
+
+      <apx-chart *ngIf="comparisonSeries.length && comparisonXAxis.categories.length" [series]="comparisonSeries" [chart]="comparisonChart"
+        [xaxis]="comparisonXAxis" [plotOptions]="comparisonPlotOptions" [theme]="theme">
+      </apx-chart>
+
+      <div *ngIf="!comparisonSeries.length" class="empty-state">
+        Sem dados para comparação
+      </div>
+    </div>
+
+    <div class="chart-card chart-wide">
+      <h3 class="chart-title">Gasto real por mês (parcelas + fixos)</h3>
+
+      <div class="chart-scroll">
+        <apx-chart *ngIf="monthlyPurchasesSeries.length && monthlyRealXAxis.categories.length" [series]="monthlyPurchasesSeries" [chart]="monthlyRealChart"
+          [xaxis]="monthlyRealXAxis" [plotOptions]="monthlyRealPlotOptions" [dataLabels]="dataLabels"
+          [responsive]="monthlyRealResponsive" [theme]="theme">
+        </apx-chart>
+      </div>
+
+      <div *ngIf="!monthlyPurchasesSeries.length" class="empty-state">
+        Nenhum dado disponível
+      </div>
+    </div>
   </div>
+
+  <!-- =========================
+       PLANEJAMENTO FUTURO
+  ========================== -->
+  <div class="section-block">
+    <div class="section-highlight">
+      Planejamento futuro
+    </div>
+
+    <div class="chart-card chart-wide">
+      <h3 class="chart-title">
+        Planejamento futuro de gastos (parcelas + fixos)
+      </h3>
+
+      <apx-chart *ngIf="futurePlanningSeries.length && futurePlanningXAxis.categories.length" [series]="futurePlanningSeries" [chart]="futurePlanningChart"
+        [xaxis]="futurePlanningXAxis" [stroke]="futurePlanningStroke" [theme]="theme">
+      </apx-chart>
+
+      <div *ngIf="!futurePlanningSeries.length" class="empty-state">
+        Nenhum planejamento futuro disponível
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================
+       RESUMO FINANCEIRO
+  ========================== -->
+  <div class="section-block">
+    <div class="section-highlight">
+      Resumo financeiro do mês
+    </div>
+
+    <div class="chart-pair">
+
+      <div class="chart-card">
+        <h3 class="chart-title">Terceiros x Gasto total</h3>
+
+        <apx-chart *ngIf="thirdPartyData && thirdPartyGaugeSeries.length" [series]="thirdPartyGaugeSeries" [chart]="thirdPartyGaugeChart"
+          [plotOptions]="thirdPartyGaugeOptions.plotOptions" [fill]="thirdPartyGaugeOptions.fill">
+        </apx-chart>
+
+        <div class="gauge-footer" *ngIf="thirdPartyData">
+          <div>
+            <span>Terceiros</span>
+            <strong>R$ {{ thirdPartyData.third_party.value }}</strong>
+          </div>
+
+          <div>
+            <span>Total do mês</span>
+            <strong>R$ {{ thirdPartyData.total }}</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <h3 class="chart-title">Meu gasto real</h3>
+
+        <apx-chart *ngIf="thirdPartyData" [series]="myRealGaugeSeries" [chart]="thirdPartyGaugeChart"
+          [plotOptions]="thirdPartyGaugeOptions.plotOptions" [fill]="{ colors: ['#22c55e'] }">
+        </apx-chart>
+
+        <div class="gauge-footer" *ngIf="thirdPartyData">
+          <div>
+            <span>Meu gasto</span>
+            <strong>R$ {{ thirdPartyData.my_real.value }}</strong>
+          </div>
+
+          <div>
+            <span>Total do mês</span>
+            <strong>R$ {{ thirdPartyData.total }}</strong>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
 </div>

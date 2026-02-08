@@ -1,3 +1,5 @@
+@use 'ngx-toastr/toastr';
+
 :root {
   --bg-main: #f1f5f9;     // fundo geral
   --bg-card: #ffffff;    // cards
@@ -68,7 +70,7 @@ select:focus {
 
 button {
   background: var(--primary);
-  color: #020617;
+  color: #ffffff;
   border: none;
   padding: 10px 16px;
   border-radius: 10px;

@@ -1,36 +1,51 @@
+<h2 class="form-title">
+  {{ expense ? 'Editar despesa' : 'Cadastrar despesa' }}
+</h2>
 <form [formGroup]="form" (ngSubmit)="submit()">
-  <h3>
-    {{ expense ? 'Editar despesa' : 'Cadastrar nova despesa' }}
-  </h3>
 
-  <input placeholder="Descrição" formControlName="description" />
+  <input formControlName="description" placeholder="Descrição" />
 
-  <input type="text" placeholder="Valor (R$)" formControlName="total_value" inputmode="decimal"
-    (blur)="formatValue()" />
+  <input type="text" formControlName="total_value" placeholder="Valor (R$)" (blur)="formatValue()" />
 
   <input type="date" formControlName="purchase_date" />
 
   <select formControlName="payment_type">
-    <option [ngValue]="null" disabled>Selecione o método de pagamento</option>
+    <option [ngValue]="null" disabled>Pagamento</option>
     <option value="CARTAO">Cartão</option>
     <option value="PIX">Pix</option>
     <option value="DINHEIRO">Dinheiro</option>
     <option value="FIADO">Fiado</option>
   </select>
 
-  <select *ngIf="form.get('payment_type')?.value === 'CARTAO'" formControlName="card">
-    <option [ngValue]="null" disabled>Selecione o cartão</option>
-    <option *ngFor="let card of cards" [ngValue]="card.id">
-      {{ card.bank_name }} - {{ card.brand }}
+  <label *ngIf="$any(form.get('payment_type')?.value) === 'CARTAO'">
+    <input type="checkbox" formControlName="debito_automatico" />
+    Pagamento automático
+  </label>
+
+  <select *ngIf="$any(form.get('payment_type')?.value) === 'CARTAO'" formControlName="card">
+    <option [ngValue]="null" disabled>Cartão</option>
+    <option *ngFor="let c of cards" [ngValue]="c.id">
+      {{ c.bank_name }} - {{ c.brand }}
     </option>
   </select>
 
-  <input type="number" placeholder="Parcelas" formControlName="installments_quantity" />
+  <select formControlName="category">
+    <option [ngValue]="null" disabled>Categoria</option>
+    <option *ngFor="let c of categories" [ngValue]="c.id">
+      {{ c.name }}
+    </option>
+  </select>
 
-  <div class="actions">
-    <button type="submit" class="primary">Salvar</button>
-    <button type="button" class="secondary" (click)="close()">Cancelar</button>
-  </div>
+  <select formControlName="subcategory" [disabled]="!subcategories.length">
+    <option [ngValue]="null" disabled>Subcategoria</option>
+    <option *ngFor="let s of subcategories" [ngValue]="s.id">
+      {{ s.name }}
+    </option>
+  </select>
 
+  <input type="number" formControlName="installments_quantity" />
+
+  <button type="submit">Salvar</button>
+  <button type="button" (click)="close()">Cancelar</button>
 
 </form>

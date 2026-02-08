@@ -1,18 +1,51 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, ViewChild, ElementRef, AfterViewInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NgApexchartsModule } from 'ng-apexcharts';
 import {
-  ApexChart,
-  ApexLegend,
-  ApexTheme,
-  ApexNonAxisChartSeries,
-  ApexPlotOptions,
   ApexAxisChartSeries,
-  ApexXAxis,
-  ApexStroke
+  ApexNonAxisChartSeries,
+  ApexXAxis
 } from 'ng-apexcharts';
+
+import ApexCharts from 'apexcharts';
 import { DashboardService } from './dashboard.service';
-import { ChangeDetectorRef } from '@angular/core';
+
+// Donut
+import {
+  DONUT_CHART,
+  CARD_DONUT_CHART,
+  DONUT_LEGEND,
+  DONUT_THEME
+} from './charts/donut.config';
+
+// Line
+import {
+  MONTHLY_LINE_CHART,
+  MONTHLY_LINE_STROKE,
+  DEFAULT_LINE_XAXIS,
+  FUTURE_LINE_CHART,
+  FUTURE_LINE_STROKE
+} from './charts/line.config';
+
+// Bar
+import {
+  COMPARISON_BAR_CHART,
+  COMPARISON_BAR_XAXIS,
+  COMPARISON_BAR_PLOT,
+  MONTHLY_REAL_BAR_CHART,
+  MONTHLY_REAL_XAXIS,
+  MONTHLY_REAL_PLOT,
+  MONTHLY_REAL_DATALABELS,
+  MONTHLY_REAL_RESPONSIVE,
+  SUBCATEGORY_BAR_CHART,
+  SUBCATEGORY_BAR_PLOT
+} from './charts/bar.config';
+
+// Radial
+import {
+  RADIAL_GAUGE_CHART,
+  RADIAL_GAUGE_OPTIONS
+} from './charts/radial.config';
 
 @Component({
   standalone: true,
@@ -21,60 +54,81 @@ import { ChangeDetectorRef } from '@angular/core';
   styleUrls: ['./dashboard.scss'],
   imports: [CommonModule, NgApexchartsModule]
 })
-export class Dashboard implements OnInit {
-  isChartReady = false;
+export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
+
+  @ViewChild('dashboardContainer', { static: true }) dashboardContainer!: ElementRef;
+
+  private resizeObserver!: ResizeObserver;
 
   salaryGoal: any = null;
   limitGoal: any = null;
-
   alerts: any = null;
   goals: any = null;
 
   categoryGoals: any[] = [];
+
   series: ApexNonAxisChartSeries = [];
   labels: string[] = [];
+
   monthlySeries: ApexAxisChartSeries = [];
-  monthlyLabels: string[] = [];
+  monthlyXAxis: ApexXAxis = { ...DEFAULT_LINE_XAXIS };
+
   cardSeries: ApexNonAxisChartSeries = [];
   cardLabels: string[] = [];
+
   comparisonSeries: ApexAxisChartSeries = [];
-  fixedCommitments: any[] = [];
 
-  chart: ApexChart = {
-    type: 'donut',
-    height: 320
-  };
+  totalSeries: ApexNonAxisChartSeries = [];
+  totalLabels: string[] = [];
 
-  cardChart: ApexChart = {
-    type: 'donut',
-    height: 320
-  };
+  cardTotalSeries: ApexNonAxisChartSeries = [];
+  cardTotalLabels: string[] = [];
 
-  theme: ApexTheme = {
-    mode: 'dark'
-  };
+  monthlyPurchasesSeries: ApexAxisChartSeries = [];
+  monthlyRealXAxis: ApexXAxis = { ...MONTHLY_REAL_XAXIS };
 
-  legend: ApexLegend = {
-    position: 'bottom'
-  };
+  futurePlanningSeries: ApexAxisChartSeries = [];
+  futurePlanningXAxis: ApexXAxis = { categories: [] };
 
-  monthlyChart: ApexChart = {
-    type: 'line',
-    height: 320,
-    toolbar: { show: false }
-  };
+  subcategorySeries: ApexAxisChartSeries = [];
+  subcategoryXAxis: ApexXAxis = { categories: [] };
 
-  monthlyXAxis: ApexXAxis = {
-    categories: []
-  };
+  thirdPartyGaugeSeries: number[] = [];
+  myRealGaugeSeries: number[] = [];
+  thirdPartyData: any = null;
 
-  monthlyStroke: ApexStroke = {
-    curve: 'smooth'
-  };
+  // Charts configs
+  theme = DONUT_THEME;
+  legend = DONUT_LEGEND;
+
+  chart = DONUT_CHART;
+  cardChart = CARD_DONUT_CHART;
+
+  monthlyChart = MONTHLY_LINE_CHART;
+  monthlyStroke = MONTHLY_LINE_STROKE;
+
+  comparisonChart = COMPARISON_BAR_CHART;
+  comparisonXAxis = COMPARISON_BAR_XAXIS;
+  comparisonPlotOptions = COMPARISON_BAR_PLOT;
+
+  monthlyRealChart = MONTHLY_REAL_BAR_CHART;
+  monthlyRealPlotOptions = MONTHLY_REAL_PLOT;
+  dataLabels = MONTHLY_REAL_DATALABELS;
+  monthlyRealResponsive = MONTHLY_REAL_RESPONSIVE;
+
+  futurePlanningChart = FUTURE_LINE_CHART;
+  futurePlanningStroke = FUTURE_LINE_STROKE;
+
+  subcategoryChart = SUBCATEGORY_BAR_CHART;
+  subcategoryPlotOptions = SUBCATEGORY_BAR_PLOT;
+
+  thirdPartyGaugeChart = RADIAL_GAUGE_CHART;
+  thirdPartyGaugeOptions = RADIAL_GAUGE_OPTIONS;
 
   constructor(
     private dashboardService: DashboardService,
-    private cdr: ChangeDetectorRef) { }
+    private cdr: ChangeDetectorRef
+  ) { }
 
   ngOnInit(): void {
     this.loadSummary();
@@ -84,131 +138,133 @@ export class Dashboard implements OnInit {
     this.loadMonthlyEvolution();
     this.loadByCard();
     this.loadMonthComparison();
-    this.loadFixedCommitments();
+    this.loadCategoryTotals();
+    this.loadByCardTotal();
+    this.loadMonthlyRealCost();
+    this.loadFuturePlanning();
+    this.loadSubcategoryTotals();
+    this.loadThirdPartyGauge();
   }
+
+  ngAfterViewInit(): void {
+    this.resizeObserver = new ResizeObserver(() => {
+      ApexCharts.exec('all', 'updateOptions', {}, false, true);
+    });
+
+    this.resizeObserver.observe(this.dashboardContainer.nativeElement);
+  }
+
+  ngOnDestroy(): void {
+    if (this.resizeObserver) {
+      this.resizeObserver.disconnect();
+    }
+  }
+  /* =========================
+     LOADERS
+  ========================= */
 
   private loadSummary(): void {
     this.dashboardService.getSummary().subscribe(data => {
-
-      setTimeout(() => {
-        this.series = [...data.values];
-        this.labels = [...data.labels];
-
-        this.salaryGoal = data.salary_based;
-        this.limitGoal = data.limit_based;
-        this.cdr.detectChanges();
-      });
-
+      this.series = [...data.values];
+      this.labels = [...data.labels];
+      this.salaryGoal = data.salary_based;
+      this.limitGoal = data.limit_based;
+      this.cdr.detectChanges();
     });
   }
 
   private loadAlerts(): void {
     this.dashboardService.getAlerts().subscribe(data => {
-
-      setTimeout(() => {
-        this.alerts = data;
-        this.cdr.detectChanges();
-      });
-
+      this.alerts = data;
+      this.cdr.detectChanges();
     });
   }
 
   private loadGoals(): void {
     this.dashboardService.getGoals().subscribe(data => {
-
-      setTimeout(() => {
-        this.goals = data;
-        this.cdr.detectChanges();
-      });
-
+      this.goals = data;
+      this.cdr.detectChanges();
     });
   }
 
   private loadCategoryGoals(): void {
     this.dashboardService.getCategoryGoals().subscribe(data => {
-
-      setTimeout(() => {
-        this.categoryGoals = data;
-        this.cdr.detectChanges();
-      });
-
+      this.categoryGoals = data;
+      this.cdr.detectChanges();
     });
   }
 
   private loadMonthlyEvolution(): void {
     this.dashboardService.getMonthlyEvolution().subscribe(data => {
-
-      setTimeout(() => {
-        this.monthlySeries = [
-          {
-            name: 'Gastos',
-            data: data.values
-          }
-        ];
-
-        this.monthlyLabels = data.labels;
-        this.monthlyXAxis.categories = data.labels;
-
-        this.cdr.detectChanges();
-      });
-
+      this.monthlySeries = [{ name: 'Gastos', data: data.values }];
+      this.monthlyXAxis.categories = data.labels;
+      this.cdr.detectChanges();
     });
   }
 
   private loadByCard(): void {
     this.dashboardService.getByCard().subscribe(data => {
-
-      setTimeout(() => {
-        this.cardSeries = [...data.values];
-        this.cardLabels = [...data.labels];
-        this.cdr.detectChanges();
-      });
-
-    });
-  }
-
-  comparisonChart: ApexChart = {
-    type: 'bar',
-    height: 320,
-    toolbar: { show: false }
-  };
-
-  comparisonXAxis: ApexXAxis = {
-    categories: ['Mês anterior', 'Mês atual']
-  };
-
-  comparisonPlotOptions: ApexPlotOptions = {
-    bar: {
-      horizontal: false,
-      columnWidth: '45%'
-    }
-  };
-
-  private loadMonthComparison(): void {
-    this.dashboardService.getMonthComparison().subscribe(data => {
-
-      setTimeout(() => {
-        this.comparisonSeries = [
-          {
-            name: 'Gastos',
-            data: data.values
-          }
-        ];
-
-        this.comparisonXAxis.categories = data.labels;
-
-        this.cdr.detectChanges();
-      });
-
-    });
-  }
-
-  private loadFixedCommitments(): void {
-    this.dashboardService.getFixedCommitments().subscribe(data => {
-      this.fixedCommitments = data.filter(c => c.active);
+      this.cardSeries = [...data.values];
+      this.cardLabels = [...data.labels];
       this.cdr.detectChanges();
     });
   }
 
+  private loadMonthComparison(): void {
+    this.dashboardService.getMonthComparison().subscribe(data => {
+      this.comparisonSeries = [{ name: 'Gastos', data: data.values }];
+      this.comparisonXAxis.categories = data.labels;
+      this.cdr.detectChanges();
+    });
+  }
+
+  private loadCategoryTotals(): void {
+    this.dashboardService.getCategoryTotals().subscribe(data => {
+      this.totalSeries = [...data.values];
+      this.totalLabels = [...data.labels];
+      this.cdr.detectChanges();
+    });
+  }
+
+  private loadByCardTotal(): void {
+    this.dashboardService.getByCardTotal().subscribe(data => {
+      this.cardTotalSeries = [...data.values];
+      this.cardTotalLabels = [...data.labels];
+      this.cdr.detectChanges();
+    });
+  }
+
+  private loadMonthlyRealCost(): void {
+    this.dashboardService.getMonthlyRealCost().subscribe(data => {
+      this.monthlyPurchasesSeries = [{ name: 'Gasto mensal real', data: data.values }];
+      this.monthlyRealXAxis.categories = data.labels;
+      this.cdr.detectChanges();
+    });
+  }
+
+  private loadFuturePlanning(): void {
+    this.dashboardService.getFuturePlanning().subscribe(data => {
+      this.futurePlanningSeries = [{ name: 'Planejamento', data: data.values }];
+      this.futurePlanningXAxis.categories = data.labels;
+      this.cdr.detectChanges();
+    });
+  }
+
+  private loadSubcategoryTotals(): void {
+    this.dashboardService.getSubcategoryTotals().subscribe(data => {
+      this.subcategorySeries = [{ name: 'Gastos', data: data.values }];
+      this.subcategoryXAxis.categories = data.labels;
+      this.cdr.detectChanges();
+    });
+  }
+
+  private loadThirdPartyGauge(): void {
+    this.dashboardService.getThirdPartyGauge().subscribe(data => {
+      this.thirdPartyData = data;
+      this.thirdPartyGaugeSeries = [data.third_party.percentage];
+      this.myRealGaugeSeries = [data.my_real.percentage];
+      this.cdr.detectChanges();
+    });
+  }
 
 }

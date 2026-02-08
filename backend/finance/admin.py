@@ -9,7 +9,7 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(SubCategory)
 class SubCategoryAdmin(admin.ModelAdmin):
-    list_display = ('name', 'category', 'user', 'active')
+    list_display = ('name', 'category', 'active')
     list_filter = ('category', 'active')
     search_fields = ('name',)
 
@@ -20,11 +20,12 @@ class ExpenseAdmin(admin.ModelAdmin):
         'user',
         'subcategory',
         'payment_type',
+        'debito_automatico',
         'total_value',
         'installments_quantity',
         'concluded'
     )
-    list_filter = ('payment_type', 'concluded')
+    list_filter = ('payment_type', 'concluded', 'debito_automatico')
     search_fields = ('description',)
 
 @admin.register(Installment)
@@ -33,10 +34,11 @@ class InstallmentAdmin(admin.ModelAdmin):
         'expense',
         'number',
         'value',
-        'due_date',
+        'competencia',
+        'payment_date',
         'paid'
     )
-    list_filter = ('paid',)
+    list_filter = ('paid', 'competencia')
 
 @admin.register(FixedCommitment)
 class FixedCommitmentAdmin(admin.ModelAdmin):

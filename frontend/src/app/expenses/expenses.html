@@ -8,11 +8,7 @@
 
 <div class="overlay" *ngIf="showForm">
   <div class="modal">
-    <app-expense-form
-      *ngIf="showForm"
-      [expense]="selectedExpense"
-      (saved)="closeForm()"
-      (cancel)="closeForm()">
+    <app-expense-form *ngIf="showForm" [expense]="selectedExpense" (saved)="closeForm(true)" (cancel)="closeForm()">
     </app-expense-form>
   </div>
 </div>
@@ -58,15 +54,15 @@
   </div>
 </form>
 
-<div *ngIf="loading" class="loading">
+<div *ngIf="loadingList" class="loading">
   Carregando despesas...
 </div>
 
-<div *ngIf="!loading && expenses.length === 0" class="empty">
+<div *ngIf="!loadingList && expenses.length === 0" class="empty">
   Nenhuma despesa encontrada
 </div>
 
-<div class="expenses-list" *ngIf="!loading && expenses.length > 0">
+<div class="expenses-list" *ngIf="!loadingList && expenses.length > 0">
   <div class="expense" *ngFor="let expense of expenses">
 
     <div class="info">
@@ -78,8 +74,12 @@
         {{ expense.concluded ? 'Pago' : 'Pendente' }}
       </small>
 
-      <small *ngIf="expense.card">
-        Cartão: {{ expense.card.bank_name }} • {{ expense.card.brand }}
+      <small *ngIf="expense.debito_automatico && expense.payment_type === 'CARTAO'" class="auto">
+        Pago automaticamente
+      </small>
+
+      <small>
+        {{ getPaymentLabel(expense) }}
       </small>
 
       <small *ngIf="expense.installments_quantity > 1">
@@ -98,12 +98,44 @@
     </div>
 
     <div class="actions">
-      <button *ngIf="expense.remaining_installments > 0" class="pay-btn" (click)="payNextInstallment(expense)">
-        Marcar parcela como paga
+      <button class="pay-btn success" [disabled]="expense.concluded || loadingList"
+        (click)="payNextInstallment(expense)">
+        Marcar como pago
       </button>
-      <button class="icon" (click)="editExpense(expense)">✏️</button>
-      <button class="icon danger" (click)="deleteExpense(expense)">🗑️</button>
+
+      <button class="pay-btn outline-warning" *ngIf="expense.remaining_installments < expense.installments_quantity"
+        (click)="undoPayment(expense)">
+        Desfazer pagamento
+      </button>
+
+      <button class="icon" (click)="editExpense(expense)" aria-label="Editar">
+        <i class="material-icons">edit</i>
+      </button>
+
+      <button class="icon danger" (click)="openDeleteConfirm(expense)" aria-label="Excluir">
+        <i class="material-icons">delete</i>
+      </button>
     </div>
 
+  </div>
+</div>
+<div class="overlay" *ngIf="confirmDelete">
+  <div class="modal confirm-modal">
+    <h3>Confirmar exclusão</h3>
+
+    <p>
+      Deseja remover
+      <strong>"{{ expenseToDelete?.description }}"</strong>?
+    </p>
+
+    <div class="actions">
+      <button class="outline" (click)="cancelDelete()">
+        Cancelar
+      </button>
+
+      <button class="danger" (click)="confirmDeleteExpense()">
+        Remover
+      </button>
+    </div>
   </div>
 </div>

@@ -1,7 +1,8 @@
 <div class="form-overlay">
     <form [formGroup]="form" (ngSubmit)="save()">
 
-        <h2>Novo compromisso fixo</h2>
+        <h2>{{ isEdit ? 'Editar compromisso fixo' : 'Novo compromisso fixo' }}</h2>
+
         <input placeholder="Nome (ex: Água)" formControlName="name" />
 
         <input type="text" placeholder="Valor (R$)" formControlName="value" inputmode="decimal"
@@ -20,7 +21,9 @@
         <input type="number" placeholder="Dia do vencimento (1–31)" formControlName="due_day" min="1" max="31" />
 
         <div class="actions">
-            <button type="submit" class="primary">Salvar</button>
+            <button type="submit" class="primary">
+                {{ isEdit ? 'Atualizar' : 'Salvar' }}
+            </button>
             <button type="button" class="secondary" (click)="cancel()">Cancelar</button>
         </div>
 

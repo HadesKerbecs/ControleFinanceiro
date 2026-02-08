@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { CardsService } from './cards.service';
 import { Router } from '@angular/router';
 import { CardForm } from './card-form/card-form';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   standalone: true,
@@ -16,11 +17,14 @@ export class Cards implements OnInit {
   cards: any[] = [];
   loading = true;
   showForm = false;
+  confirmDelete = false;
+  cardToDelete: any = null;
 
   constructor(
     private service: CardsService,
     private router: Router,
-    private cd: ChangeDetectorRef
+    private cd: ChangeDetectorRef,
+    private toastr: ToastrService
   ) { }
 
   ngOnInit(): void {
@@ -29,6 +33,7 @@ export class Cards implements OnInit {
 
   loadCards() {
     this.loading = true;
+
     this.service.getCards().subscribe({
       next: res => {
         this.cards = res;
@@ -37,6 +42,7 @@ export class Cards implements OnInit {
       },
       error: () => {
         this.loading = false;
+        this.toastr.error('Erro ao carregar cartões');
       }
     });
   }
@@ -109,7 +115,7 @@ export class Cards implements OnInit {
 
   editCard(card: any) {
     if (this.isCardExpired(card)) {
-      alert('Este cartão está vencido e não pode ser editado.');
+      this.toastr.warning('Este cartão está vencido e não pode ser editado');
       return;
     }
 
@@ -118,11 +124,30 @@ export class Cards implements OnInit {
   }
 
   deleteCard(card: any) {
-    const ok = confirm(`Deseja remover o cartão ${card.bank_name}?`);
-    if (!ok) return;
+    this.cardToDelete = card;
+    this.confirmDelete = true;
+  }
+  
+  cancelDelete() {
+    this.confirmDelete = false;
+    this.cardToDelete = null;
+  }
 
-    this.service.deleteCard(card.id).subscribe(() => {
-      this.loadCards();
+  confirmDeleteCard() {
+    if (!this.cardToDelete) return;
+
+    const id = this.cardToDelete.id;
+
+    this.service.deleteCard(id).subscribe({
+      next: () => {
+        this.toastr.success('Cartão removido com sucesso');
+        this.confirmDelete = false;
+        this.cardToDelete = null;
+        this.loadCards();
+      },
+      error: () => {
+        this.toastr.error('Erro ao remover cartão');
+      }
     });
   }
 
@@ -131,7 +156,7 @@ export class Cards implements OnInit {
   }
 
   getUsagePercent(card: any): number {
-  if (!card.limit || card.limit === 0) return 0;
-  return Math.min((card.total_spent / card.limit) * 100, 100);
+    if (!card.limit || card.limit === 0) return 0;
+    return Math.min((card.total_spent / card.limit) * 100, 100);
   }
 }

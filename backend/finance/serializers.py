@@ -1,6 +1,8 @@
 from calendar import monthrange
 from rest_framework import serializers
 from cards.serializers import CardSerializer
+from cards.models import Card
+from finance.models import Category, SubCategory, Expense, Installment, FixedCommitment, PersonDebt, History
 from django.utils.timezone import now
 from datetime import date
 
@@ -21,14 +23,27 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class SubCategorySerializer(serializers.ModelSerializer):
+    category_name = serializers.CharField(source='category.name', read_only=True)
+
     class Meta:
         model = SubCategory
-        fields = ('id', 'name')
+        fields = ('id', 'name', 'category', 'category_name')
 
 class ExpenseSerializer(serializers.ModelSerializer):
+    card = serializers.PrimaryKeyRelatedField(
+        queryset=Card.objects.all(),
+        required=False,
+        allow_null=True
+    )
+
+    subcategory = serializers.PrimaryKeyRelatedField(
+        queryset=SubCategory.objects.all()
+    )
+
+    card_detail = CardSerializer(source='card', read_only=True)
+    subcategory_detail = SubCategorySerializer(source='subcategory', read_only=True)
+
     installments_value = serializers.SerializerMethodField()
-    card = CardSerializer(read_only=True)
-    subcategory = SubCategorySerializer(read_only=True)
     remaining_installments = serializers.SerializerMethodField()
 
     class Meta:
@@ -37,33 +52,41 @@ class ExpenseSerializer(serializers.ModelSerializer):
             'id',
             'description',
             'subcategory',
-            'payment_type',
             'card',
+            'payment_type',
+            'subcategory_detail',
+            'card_detail',
             'total_value',
             'installments_quantity',
             'installments_value',
             'remaining_installments',
             'purchase_date',
             'concluded',
+            'debito_automatico',
         )
 
     def get_installments_value(self, obj):
-        return obj.total_value / obj.installments_quantity
-    
+        qty = obj.installments_quantity or 1
+        return float(obj.total_value) / qty
+
     def get_remaining_installments(self, obj):
-        return obj.remaining_installments()
-    
+        today = date.today()
+        return obj.installments.filter(
+            paid=False,
+            due_date__gte=today
+        ).count()
+
     def validate(self, data):
         payment_type = data.get('payment_type')
         card = data.get('card')
 
-        if payment_type == 'CARTAO' and not card:
-            raise serializers.ValidationError(
-            {'card': 'Cartão é obrigatório quando o pagamento é no cartão.'}
-        )
-
-        if payment_type != 'CARTAO':
-            data['card'] = None
+        if payment_type == Expense.PaymentType.CARTAO:
+            if card is None:
+                 raise serializers.ValidationError({
+                    'card': 'Cartão é obrigatório quando o pagamento é no cartão.'
+                })
+            else:
+                data['card'] = card
 
         return data
 

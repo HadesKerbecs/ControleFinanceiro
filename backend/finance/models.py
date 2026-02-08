@@ -4,6 +4,7 @@ from django.conf import settings
 from django.utils import timezone
 from datetime import date, timedelta
 from decimal import Decimal
+from dateutil.relativedelta import relativedelta
 
 class Category(models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -18,12 +19,6 @@ class Category(models.Model):
         return self.name
 
 class SubCategory(models.Model):
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        related_name='subcategories'
-    )
-
     category = models.ForeignKey(
         Category,
         on_delete=models.PROTECT,
@@ -35,7 +30,7 @@ class SubCategory(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = ('user', 'name')
+        unique_together = ('category', 'name')
         verbose_name = 'Subcategory'
         verbose_name_plural = 'Subcategories'
 
@@ -43,6 +38,8 @@ class SubCategory(models.Model):
         return f'{self.category.name} - {self.name}'
     
 class Expense(models.Model):
+    debito_automatico = models.BooleanField(default=False)
+
     class PaymentType(models.TextChoices):
         CARTAO = 'CARTAO', 'Cartão'
         PIX = 'PIX', 'PIX'
@@ -87,49 +84,65 @@ class Expense(models.Model):
         return f'{self.description} - {self.total_value}'
     
     def generate_installments(self):
-        if self.installments.exists():
-            return
+        self.installments.all().delete()
+
+        if not self.installments_quantity or self.installments_quantity <= 0:
+            self.installments_quantity = 1
 
         installment_value = (
             self.total_value / Decimal(self.installments_quantity)
         ).quantize(Decimal('0.01'))
 
+        if self.payment_type != Expense.PaymentType.CARTAO:
+            competencia = self.purchase_date.replace(day=1)
+            payment_date = self.purchase_date
 
-        for i in range(1, self.installments_quantity + 1):
+            for i in range(self.installments_quantity):
+                Installment.objects.create(
+                    expense=self,
+                    number=i + 1,
+                    value=installment_value,
+                    competencia=competencia,
+                    payment_date=payment_date,
+                    due_date=payment_date,
+                    paid=False
+                )
+
+            self.concluded = False
+            self.save()
+            return
+
+        # 🔥 DAQUI PRA BAIXO → SOMENTE CARTÃO
+        purchase = self.purchase_date
+        card = self.card
+
+        if purchase.day > card.closing_day:
+            base_month = purchase + relativedelta(months=1)
+        else:
+            base_month = purchase
+
+        base_month = base_month + relativedelta(months=1)
+
+        for i in range(self.installments_quantity):
+            competencia = (base_month + relativedelta(months=i)).replace(day=1)
+            payment_date = competencia.replace(day=min(card.due_day, 28))
+
             Installment.objects.create(
                 expense=self,
-                number=i,
+                number=i + 1,
                 value=installment_value,
-                due_date=self.purchase_date + timedelta(days=30 * i)
+                competencia=competencia,
+                payment_date=payment_date,
+                due_date=payment_date,
+                paid=False
             )
+
+        self.concluded = False
+        self.save()
+            
     def remaining_installments(self):
-        if self.payment_type != self.PaymentType.CARTAO or not self.card:
-            return 0 if self.concluded else self.installments_quantity
+        return self.installments.filter(paid=False).count()
 
-        today = date.today()
-
-        current_month = today.month
-        current_year = today.year
-
-        paid_installments = 0
-
-        for inst in self.installments.all():
-            due = inst.due_date
-
-            if (
-                (current_year > due.year) or
-                (current_year == due.year and current_month > due.month) or
-                (
-                    current_year == due.year and
-                    current_month == due.month and
-                    today.day > self.card.due_day
-                )
-            ):
-                paid_installments += 1
-
-        remaining = self.installments_quantity - paid_installments
-        return max(remaining, 0)
-    
 class Installment(models.Model):
     expense = models.ForeignKey(
         Expense,
@@ -141,6 +154,10 @@ class Installment(models.Model):
     value = models.DecimalField(max_digits=10, decimal_places=2)
 
     due_date = models.DateField()
+
+    competencia = models.DateField(null=True, blank=True)      # 🔥 mês da fatura (YYYY-MM-01)
+    payment_date = models.DateField(null=True, blank=True)     # 🔥 dia real de pagamento do cartão
+
     paid = models.BooleanField(default=False)
     paid_at = models.DateField(null=True, blank=True)
 
@@ -226,3 +243,4 @@ class History(models.Model):
 
     def __str__(self):
         return f'{self.action} - {self.description[:30]}'
+

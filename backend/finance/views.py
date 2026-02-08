@@ -1,3 +1,4 @@
+import logging
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated
 from django_filters.rest_framework import DjangoFilterBackend
@@ -5,6 +6,8 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import status
 from django.utils.timezone import now
+
+logger = logging.getLogger(__name__)
 
 from .models import (
     Category,
@@ -34,9 +37,11 @@ class CategoryViewSet(ModelViewSet):
 class SubCategoryViewSet(ModelViewSet):
     serializer_class = SubCategorySerializer
     permission_classes = [IsAuthenticated]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['category']
 
     def get_queryset(self):
-        return SubCategory.objects.filter(user=self.request.user)
+        return SubCategory.objects.filter(active=True).order_by('name')
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
@@ -48,26 +53,91 @@ class ExpenseViewSet(ModelViewSet):
 
     filterset_fields = {
         'card': ['exact'],
-        'subcategory__category': ['exact'],
+        'subcategory__category__id': ['exact'],
         'payment_type': ['exact'],
         'concluded': ['exact'],
         'purchase_date': ['gte', 'lte'],
     }
 
     def get_queryset(self):
-        return Expense.objects.filter(user=self.request.user).order_by('-purchase_date')
+        return (
+            Expense.objects
+            .filter(user=self.request.user)
+            .prefetch_related('card', 'subcategory__category')
+            .order_by('-purchase_date')
+        )
+    
+    def list(self, request, *args, **kwargs):
+        try:
+            return super().list(request, *args, **kwargs)
+        except Exception:
+            logger.exception('ERRO AO LISTAR DESPESAS')
+            raise
 
     def perform_create(self, serializer):
         expense = serializer.save(user=self.request.user)
-        expense.generate_installments()
+        if expense.installments_quantity and expense.installments_quantity > 0:
+            expense.generate_installments()
+
+    def perform_update(self, serializer):
+        old = self.get_object()
+
+        expense = serializer.save()
+
+        fields_that_change_installments = (
+            old.purchase_date != expense.purchase_date or
+            old.installments_quantity != expense.installments_quantity or
+            old.total_value != expense.total_value
+        )
+        
+        if fields_that_change_installments:
+            expense.installments.all().delete()
+            expense.concluded = False
+            expense.save()
+            expense.generate_installments()
 
 class InstallmentViewSet(ModelViewSet):
     serializer_class = InstallmentSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return Installment.objects.filter(expense__user=self.request.user)
-    
+        qs = Installment.objects.filter(expense__user=self.request.user)
+
+        expense_id = self.request.query_params.get('expense')
+        if expense_id:
+            qs = qs.filter(expense_id=expense_id)
+
+        return qs
+
+    @action(detail=True, methods=['post'])
+    def unpay(self, request, pk=None):
+        installment = self.get_object()
+
+        if not installment.paid:
+            return Response(
+                {'detail': 'Parcela já está pendente.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        installment.paid = False
+        installment.paid_at = None
+        installment.save()
+
+        expense = installment.expense
+        expense.concluded = False
+        expense.save()
+
+        History.objects.create(
+            user=request.user,
+            action=History.ActionType.UPDATE,
+            description=f'Pagamento desfeito da parcela {installment.number} da despesa "{expense.description}"'
+        )
+
+        return Response(
+            {'detail': 'Pagamento desfeito com sucesso.'},
+            status=status.HTTP_200_OK
+        )
+
     @action(detail=True, methods=['post'])
     def pay(self, request, pk=None):
         installment = self.get_object()
@@ -79,11 +149,10 @@ class InstallmentViewSet(ModelViewSet):
             )
 
         installment.paid = True
-        installment.paid_at = now().date()
+        installment.paid_at = now()
         installment.save()
 
         expense = installment.expense
-
         if not expense.installments.filter(paid=False).exists():
             expense.concluded = True
             expense.save()
@@ -91,11 +160,11 @@ class InstallmentViewSet(ModelViewSet):
         History.objects.create(
             user=request.user,
             action=History.ActionType.PAY,
-            description=f'Parcela {installment.number} paga da despesa "{expense.description}"'
+            description=f'Pagamento da parcela {installment.number} da despesa "{expense.description}"'
         )
 
         return Response(
-            {'detail': 'Parcela paga com sucesso.'},
+            {'detail': 'Pagamento realizado com sucesso.'},
             status=status.HTTP_200_OK
         )
 
@@ -122,3 +191,4 @@ class HistoryViewSet(ModelViewSet):
 
     def get_queryset(self):
         return History.objects.filter(user=self.request.user)
+    

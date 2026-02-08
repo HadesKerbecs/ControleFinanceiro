@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, Validators, FormControl, FormGroup } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { take } from 'rxjs/operators';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-profile',
@@ -17,9 +18,9 @@ export class Profile implements OnInit {
     tipo_vinculo: FormControl<string | null>;
   }>;
 
+  message = '';
   loading = true;
   saving = false;
-  message = '';
 
   inss: number | null = null;
   salario_liquido: number | null = null;
@@ -29,7 +30,8 @@ export class Profile implements OnInit {
 
   constructor(
     private http: HttpClient,
-    private cd: ChangeDetectorRef
+    private cd: ChangeDetectorRef,
+    private toastr: ToastrService
   ) {
     this.form = new FormGroup({
       salario_bruto: new FormControl<string | null>(null, {
@@ -43,15 +45,10 @@ export class Profile implements OnInit {
 
   ngOnInit(): void {
     this.load();
-
-    this.form.valueChanges.subscribe(() => {
-      this.message = '';
-    });
   }
 
   load(): void {
     this.loading = true;
-    this.message = '';
 
     this.inss = null;
     this.salario_liquido = null;
@@ -65,9 +62,9 @@ export class Profile implements OnInit {
           {
             salario_bruto: data.salario_bruto != null
               ? new Intl.NumberFormat('pt-BR', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-              }).format(data.salario_bruto)
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2
+                }).format(data.salario_bruto)
               : null,
             tipo_vinculo: data.tipo_vinculo ?? null,
           },
@@ -84,11 +81,7 @@ export class Profile implements OnInit {
       error: err => {
         console.log('ERRO PROFILE:', err);
         this.loading = false;
-
-        if (err.status && err.status !== 404) {
-          this.message = 'Erro ao carregar perfil.';
-        }
-
+        this.toastr.error('Erro ao carregar perfil');
         this.cd.detectChanges();
       }
     });
@@ -97,6 +90,7 @@ export class Profile implements OnInit {
   save(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
+      this.toastr.warning('Preencha todos os campos obrigatórios');
       return;
     }
 
@@ -121,13 +115,13 @@ export class Profile implements OnInit {
         this.limite_mensal = data.limite_mensal ?? null;
 
         this.saving = false;
-        this.message = 'Perfil salvo com sucesso.';
+        this.toastr.success('Perfil salvo com sucesso');
         this.cd.detectChanges();
       },
       error: err => {
         console.log('ERRO SAVE:', err);
         this.saving = false;
-        this.message = 'Erro ao salvar perfil.';
+        this.toastr.error('Erro ao salvar perfil');
         this.cd.detectChanges();
       }
     });
@@ -147,10 +141,7 @@ export class Profile implements OnInit {
 
     if (!v) return;
 
-    const normalizado = v
-      .replace(/\./g, '')
-      .replace(',', '.');
-
+    const normalizado = v.replace(/\./g, '').replace(',', '.');
     const n = Number(normalizado);
     if (isNaN(n)) return;
 
@@ -161,5 +152,4 @@ export class Profile implements OnInit {
 
     ctrl.setValue(formatado, { emitEvent: false });
   }
-
 }

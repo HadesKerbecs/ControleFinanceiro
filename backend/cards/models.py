@@ -1,3 +1,4 @@
+from datetime import date
 from decimal import Decimal
 from django.conf import settings
 from django.db import models
@@ -38,13 +39,16 @@ class Card(models.Model):
     def total_spent(self):
         Installment = apps.get_model('finance', 'Installment')
 
+        today = date.today()
+        current_competencia = today.replace(day=1)
         total = Installment.objects.filter(
             expense__card=self,
-            paid=False
+            paid=False,
+            competencia__gte=current_competencia
         ).aggregate(total=Sum('value'))['total']
 
         return total or Decimal('0.00')
-    
+
     @property
     def available_limit(self):
         return self.limit - self.total_spent
