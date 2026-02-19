@@ -15,7 +15,7 @@ import { ToastrService } from 'ngx-toastr';
 
 export class FixedCommitments implements OnInit {
   commitments: any[] = [];
-  private api = 'http://127.0.0.1:8000/api/fixed-commitments/';
+  private api = 'https://controlefinanceiro-pgsn.onrender.com/api/fixed-commitments/';
 
   constructor(
     private toastr: ToastrService,

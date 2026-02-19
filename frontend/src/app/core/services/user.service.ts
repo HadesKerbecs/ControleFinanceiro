@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
-  private api = 'http://127.0.0.1:8000/api/users/';
+  private api = 'https://controlefinanceiro-pgsn.onrender.com/api/users/';
 
   constructor(private http: HttpClient) {}
 

@@ -5,7 +5,7 @@ import { ToastrService } from 'ngx-toastr';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private api = 'http://127.0.0.1:8000/api/auth';
+  private api = 'https://controlefinanceiro-pgsn.onrender.com/api/auth';
   private expirationTimer: any;
 
   constructor(

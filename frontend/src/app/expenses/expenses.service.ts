@@ -3,7 +3,8 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 
 @Injectable({ providedIn: 'root' })
 export class ExpensesService {
-  private api = 'http://127.0.0.1:8000/api/expenses/';
+  private api = 'https://controlefinanceiro-pgsn.onrender.com/api/expenses/';
+  private installmentsApi = 'https://controlefinanceiro-pgsn.onrender.com/api/installments/';
 
   constructor(private http: HttpClient) { }
 
@@ -24,7 +25,7 @@ export class ExpensesService {
   }
 
   updateExpense(id: number, data: any) {
-    return this.http.patch(`http://127.0.0.1:8000/api/expenses/${id}/`, data);
+    return this.http.patch(`${this.api}${id}/`, data);
   }
 
   deleteExpense(id: number) {
@@ -32,22 +33,14 @@ export class ExpensesService {
   }
 
   unpayInstallment(id: number) {
-    return this.http.post(
-      `http://127.0.0.1:8000/api/installments/${id}/unpay/`,
-      {}
-    );
+    return this.http.post(`${this.installmentsApi}${id}/unpay/`, {});
   }
 
   payInstallment(id: number) {
-    return this.http.post(
-      `http://127.0.0.1:8000/api/installments/${id}/pay/`,
-      {}
-    );
+    return this.http.post(`${this.installmentsApi}${id}/pay/`, {});
   }
 
   getInstallments(expenseId: number) {
-    return this.http.get<any[]>(
-      `http://127.0.0.1:8000/api/installments/?expense=${expenseId}`
-    );
+    return this.http.get<any[]>(`${this.installmentsApi}?expense=${expenseId}`);
   }
 }

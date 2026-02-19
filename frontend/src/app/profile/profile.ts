@@ -26,7 +26,7 @@ export class Profile implements OnInit {
   salario_liquido: number | null = null;
   limite_mensal: number | null = null;
 
-  private api = 'http://localhost:8000/api/profile/';
+  private api = 'https://controlefinanceiro-pgsn.onrender.com/api/profile/';
 
   constructor(
     private http: HttpClient,

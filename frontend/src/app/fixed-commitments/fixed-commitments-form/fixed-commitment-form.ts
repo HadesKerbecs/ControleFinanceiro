@@ -24,7 +24,7 @@ export class FixedCommitmentForm implements OnInit {
   commitmentId!: number;
 
   categories: any[] = [];
-  private api = 'http://127.0.0.1:8000/api/fixed-commitments/';
+  private api = 'https://controlefinanceiro-pgsn.onrender.com/api/fixed-commitments/';
 
   form = new FormGroup({
     name: new FormControl<string>('', {

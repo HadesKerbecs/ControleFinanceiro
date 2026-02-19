@@ -3,7 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 
 @Injectable({ providedIn: 'root' })
 export class CategoriesService {
-  private categoriesApi = 'http://127.0.0.1:8000/api/categories/';
+  private categoriesApi = 'https://controlefinanceiro-pgsn.onrender.com/api/categories/';
 
   constructor(private http: HttpClient) {}
 
@@ -13,6 +13,6 @@ export class CategoriesService {
 
   getSubCategories(categoryId: number) {
     const params = new HttpParams().set('category', categoryId);
-    return this.http.get<any[]>(`http://127.0.0.1:8000/api/subcategories/`, { params });
+    return this.http.get<any[]>(`https://controlefinanceiro-pgsn.onrender.com/api/subcategories/`, { params });
   }
 }
