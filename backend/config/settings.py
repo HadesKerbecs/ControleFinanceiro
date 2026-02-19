@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 from datetime import timedelta
+import os
 from pathlib import Path
 from corsheaders.defaults import default_headers
 
@@ -63,6 +64,8 @@ CELERY_TIMEZONE = 'America/Sao_Paulo'
 CORS_ALLOW_HEADERS = list(default_headers) + [
     'authorization',
 ]
+
+ALLOWED_HOSTS = ['*']
 
 ROOT_URLCONF = 'config.urls'
 
@@ -136,5 +139,6 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 AUTH_USER_MODEL = 'accounts.User'
