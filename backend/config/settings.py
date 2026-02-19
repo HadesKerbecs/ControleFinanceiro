@@ -42,6 +42,10 @@ INSTALLED_APPS = [
     'users',
 ]
 
+SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret")
+
+DEBUG = os.getenv("DEBUG", "True") == "True"
+
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
