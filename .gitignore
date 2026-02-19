@@ -1,0 +1,58 @@
+# ======================
+# Python / Django
+# ======================
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+.env.*
+db.sqlite3
+*.sqlite3
+
+# ======================
+# Django
+# ======================
+staticfiles/
+media/
+
+# ======================
+# Node / Angular
+# ======================
+node_modules/
+.angular/
+dist/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ======================
+# Angular / TS
+# ======================
+coverage/
+*.log
+
+# ======================
+# VS Code / IDE
+# ======================
+.vscode/
+.idea/
+
+# ======================
+# OS
+# ======================
+.DS_Store
+Thumbs.db
+
+# ======================
+# Docker
+# ======================
+*.env
+.env.docker
+
+# ======================
+# Outros
+# ======================
+backup.sql
+celerybeat-schedule
