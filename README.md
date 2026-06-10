@@ -1,179 +1,242 @@
 # 💰 Controle Financeiro
 
-Sistema web de **controle financeiro pessoal**, desenvolvido para organizar despesas, cartões, parcelas, compromissos fixos e dívidas de terceiros, com foco em **clareza financeira**, **previsibilidade** e **tomada de decisão consciente**.
+Sistema web Full Stack para gerenciamento financeiro pessoal, desenvolvido para centralizar o controle de despesas, cartões de crédito, parcelamentos, compromissos recorrentes e valores a receber.
 
-O sistema permite entender:
-- Quanto você gasta  
-- Quanto ainda deve  
-- Quanto já pagou  
-- Quanto tem a receber  
-- Qual é o seu gasto real mês a mês  
-
-Tudo de forma **estruturada**, **auditável** e **visual**.
+O objetivo do projeto é fornecer uma visão clara da situação financeira do usuário através de dashboards, indicadores e regras de negócio que auxiliam no planejamento financeiro e na tomada de decisões.
 
 ---
 
-## 🚀 Funcionalidades
+## 🚀 Principais Funcionalidades
 
-### 👤 Usuário
-- Usuário customizado
-- Salário bruto
-- Tipo de vínculo (CLT, PJ, Autônomo)
-- Base para cálculo de metas financeiras
+### 💳 Gestão de Cartões de Crédito
 
-### 🗂️ Categorias e Subcategorias
-- Categorias macro (Alimentação, Transporte, Moradia, etc.)
-- Subcategorias por usuário  
-  _(ex: Mercado, Restaurante, Shopee, Cursos, Pets)_
+* Cadastro de múltiplos cartões
+* Controle de limite total e disponível
+* Configuração de fechamento e vencimento
+* Acompanhamento de utilização do limite
 
-### 💳 Cartões de Crédito
-- Cadastro de cartões
-- Limite total
-- Dia de fechamento e vencimento
-- Cálculo automático de limite disponível
+### 🧾 Controle de Despesas
 
-### 🧾 Despesas
-- Compras com ou sem cartão
-- Tipos de pagamento:
-  - Cartão
-  - Pix
-  - Dinheiro
-  - Fiado
-- Compras à vista ou parceladas
-- Associação com subcategorias
-- Controle de status (pago / pendente)
+* Registro de despesas à vista ou parceladas
+* Múltiplas formas de pagamento:
 
-### 📆 Parcelas
-- Geração automática de parcelas
-- Controle individual de pagamento
-- Reversão de pagamento (undo)
-- Base para cálculos mensais e gráficos
+  * Cartão
+  * PIX
+  * Dinheiro
+  * Fiado
+* Controle de status de pagamento
+* Associação com categorias e subcategorias
 
-### 🔁 Compromissos Fixos
-- Gastos recorrentes (aluguel, consórcio, internet, etc.)
-- **Soft delete** (ativar/desativar sem perder histórico)
-- Controle previsível mês a mês
+### 📆 Gerenciamento de Parcelas
 
-### 🤝 Dívidas de Terceiros
-- Registro de compras feitas no seu cartão para outras pessoas
-- Controle de valores a receber
-- Separação entre gasto real e gasto temporário
+* Geração automática de parcelas
+* Controle individual de pagamentos
+* Reversão de pagamentos
+* Base para análises e dashboards financeiros
 
-### 🕓 Histórico (Auditoria)
-- Registro automático de ações:
-  - Criação
-  - Atualização
-  - Pagamento
-  - Exclusão
-- Transparência e rastreabilidade
+### 🔁 Compromissos Financeiros Recorrentes
 
----
+* Cadastro de despesas fixas mensais
+* Ativação e desativação sem perda de histórico
+* Previsibilidade de gastos futuros
 
-## 📊 Dashboard Financeiro
-- Gastos por categoria (mês atual e total)
-- Gastos por subcategoria
-- Evolução mensal de gastos
-- Comparativo entre meses
-- Parcelas que vencem
-- Gasto real (parcelas + fixos)
-- Indicadores visuais e metas financeiras
+### 🤝 Controle de Valores a Receber
+
+* Registro de compras realizadas para terceiros
+* Separação entre despesas próprias e valores pendentes de recebimento
+* Controle de saldo a receber
+
+### 🕓 Auditoria de Operações
+
+Registro automático de eventos importantes:
+
+* Criação
+* Atualização
+* Pagamento
+* Exclusão
+
+Garantindo rastreabilidade e transparência dos dados.
+
+### 📊 Dashboard Financeiro
+
+Indicadores e visualizações para acompanhamento financeiro:
+
+* Gastos por categoria
+* Gastos por subcategoria
+* Evolução mensal de despesas
+* Comparação entre períodos
+* Parcelas próximas do vencimento
+* Gasto real mensal
+* Metas financeiras
 
 ---
 
-## 🧠 Arquitetura
+## 🧠 Desafios Técnicos Resolvidos
+
+Durante o desenvolvimento foram implementadas soluções para:
+
+* Modelagem de relacionamentos financeiros complexos
+* Controle de parcelamentos e recorrência
+* Auditoria automática de operações
+* Separação entre gastos efetivos e valores temporários
+* Geração de indicadores financeiros em tempo real
+* Integração entre frontend Angular e backend Django REST Framework
+
+---
+
+## 🛠️ Tecnologias Utilizadas
 
 ### Backend
-- Django
-- Django REST Framework
-- Django Filters
-- PostgreSQL
-- Soft Delete
-- Auditoria de ações
+
+* Python
+* Django
+* Django REST Framework
+* Django Filters
+* PostgreSQL
 
 ### Frontend
-- Angular
-- Reactive Forms
-- Componentes standalone
-- ApexCharts
-- UX focado em clareza
+
+* Angular
+* TypeScript
+* Reactive Forms
+* Standalone Components
+* ApexCharts
+
+### DevOps
+
+* Docker
+* Docker Compose
+* Git
+* GitHub
 
 ---
 
-## 🐳 Execução com Docker (Backend)
+## 🏗️ Arquitetura
 
-> ⚠️ O Docker é usado **apenas no backend e banco de dados**.  
-> O frontend Angular **não está no docker-compose**.
+### Backend
+
+Responsável por:
+
+* Regras de negócio
+* Persistência dos dados
+* APIs REST
+* Auditoria de operações
+* Processamento financeiro
+
+### Frontend
+
+Responsável por:
+
+* Interface do usuário
+* Dashboards interativos
+* Consumo das APIs
+* Formulários reativos
+* Experiência de navegação
+
+---
+
+## 📷 Demonstração
+
+### Dashboard Financeiro
+
+*(Inserir screenshot)*
+
+### Gestão de Despesas
+
+*(Inserir screenshot)*
+
+### Controle de Cartões
+
+*(Inserir screenshot)*
+
+---
+
+## 🐳 Execução com Docker
 
 ### Pré-requisitos
-- Docker
-- Docker Compose
-- Node.js
-- Angular CLI
+
+* Docker
+* Docker Compose
+* Node.js
+* Angular CLI
+
+### Clonar o projeto
+
+```bash
+git clone https://github.com/HadesKerbecs/ControleFinanceiro.git
+cd ControleFinanceiro
+```
+
+### Subir containers
+
+```bash
+docker-compose up --build
+```
+
+### Executar migrações
+
+```bash
+docker-compose exec backend python manage.py migrate
+```
+
+### Criar usuário administrador
+
+```bash
+docker-compose exec backend python manage.py createsuperuser
+```
+
+### Executar aplicação
+
+```bash
+docker-compose up
+```
+
+Backend:
+http://localhost:8000
+
+Admin:
+http://localhost:8000/admin
 
 ---
 
-### 1️⃣ Clonar o repositório
-git clone https://github.com/seu-usuario/controle-financeiro.git
-cd controle-financeiro
+## 🖥️ Frontend
 
-## 2️⃣ Subir os containers
-docker-compose up --build
-
-## 3️⃣ Rodar migrations
-docker-compose exec backend python manage.py migrate
-
-## 4️⃣ Criar superusuário
-docker-compose exec backend python manage.py createsuperuser
-
-## 5️⃣ Subir novamente (sem rebuild)
-docker-compose up
-
-## 6️⃣ Backend em execução
-- API: http://localhost:8000
-- Admin: http://localhost:8000/admin
-
-🖥️ Execução do Frontend (Angular)
-Abra outro terminal:
-- cd frontend
-- npm install
-- ng serve
-
-Acesse:
-- http://localhost:4200
-
-📁 Estrutura do Projeto
-
-```text
-controle-financeiro/
-├── backend/
-│   ├── accounts/
-│   ├── categories/
-│   ├── cards/
-│   ├── expenses/
-│   ├── fixed_commitments/
-│   ├── dashboard/
-│   ├── history/
-│   ├── config/
-│   └── manage.py
-├── frontend/
-├── docker-compose.yml
-├── README.md
-└── .gitignore
+```bash
+cd frontend
+npm install
+ng serve
 ```
 
-📌 Status do Projeto
-✔ Backend completo
-✔ Regras financeiras implementadas
-✔ Dashboard funcional
-✔ Filtros avançados
+Frontend:
 
-🚧 Autenticação JWT (em evolução)
-🚧 Melhorias contínuas de UX
+http://localhost:4200
 
-🎯 Objetivo
-Projeto desenvolvido para:
+---
 
-- Aprendizado prático de Django + Angular
-- Modelagem de problemas financeiros reais
-- Análise e visualização de dados
-- Portfólio profissional
+## 🎯 Objetivos do Projeto
+
+Este projeto foi desenvolvido para:
+
+* Aplicar conceitos de desenvolvimento Full Stack
+* Implementar regras de negócio financeiras reais
+* Praticar integração entre Angular e Django
+* Explorar visualização de dados através de dashboards
+* Construir uma aplicação completa para portfólio profissional
+
+---
+
+## 📌 Status
+
+✅ Backend concluído
+
+✅ Dashboard funcional
+
+✅ Integração Frontend + Backend
+
+✅ Dockerização do ambiente
+
+✅ Regras financeiras implementadas
+
+🚧 Autenticação JWT em evolução
+
+🚧 Melhorias contínuas de UX/UI
